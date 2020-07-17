@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 from plugins.osx_version import OSXVersion
-from plugins.Summary import Summary
+from plugins.summary import Summary
 
 __author__ = 'osxripper'
 __version__ = '0.3'

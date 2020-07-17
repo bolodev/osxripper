@@ -1,4 +1,4 @@
-from riplib.Plugin import Plugin
+from riplib.plugin import Plugin
 import binascii
 import codecs
 import logging

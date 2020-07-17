@@ -1,4 +1,4 @@
-from riplib.Plugin import Plugin
+from riplib.plugin import Plugin
 import codecs
 import logging
 import os
@@ -114,8 +114,8 @@ class AirportPreferences(Plugin):
                         #             of.write("\tTimestamp: {0}\r\n".format(update["Timestamp"]))
 
                         if "Version" in plist:
-                            # of.write("Version: {0}\r\n".format(plist["Version"]))
-                            print("Version: {0}\r\n".format(plist["Version"]))
+                            of.write("Version: {0}\r\n".format(plist["Version"]))
+                            # print("Version: {0}\r\n".format(plist["Version"]))
                     except KeyError:
                         pass
                 else:

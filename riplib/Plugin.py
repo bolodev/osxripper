@@ -1,25 +1,21 @@
-import pprint
+""" Module for base Plugin classes """
+# import pprint
 
 __author__ = 'osxripper'
 __version__ = '0.2'
 __license__ = 'GPLv3'
 
 
-class Plugin(object):
+class PluginDescription():
     """
-    Base plugin class to inherit from and override as necessary
+    Class to hold basic description data
     """
     def __init__(self):
         """
-        Initialise the class. N.B. in a full implementation of a class deriving
-        from Plugin the self.* values should be changed.
+        Initialise the class
         """
         self._name = "Plugin"
         self._description = "Base class for plugins"
-        self._input_dir = None
-        self._output_dir = None
-        self._output_file = None
-        self._data_file = None
         self._type = "text"  # use [text|plist|bplist|sqlite|dir_list|mixed]
         self._os_version = "yosemite"
 
@@ -41,6 +37,84 @@ class Plugin(object):
         return self._description
 
     @property
+    def get_type(self):
+        """
+        Return the plugin type
+        """
+        return self._type
+
+    @property
+    def get_os_version(self):
+        """
+        Return the version of the OS
+        """
+        return self._os_version
+
+    def set_name(self, plugin_name):
+        """
+        Set the plugin name
+        """
+        self._name = plugin_name
+
+    def set_description(self, plugin_description):
+        """
+        Set the plugin description
+        """
+        self._description = plugin_description
+
+    def set_type(self, plugin_type):
+        """
+        Set the plugin type
+        """
+        self._type = plugin_type
+
+    def set_os_version(self, osx_version):
+        """
+        Set the version of OSX to be run
+        """
+        self._os_version = osx_version
+
+
+class Plugin(PluginDescription):
+    """
+    Base plugin class to inherit from and override as necessary
+    """
+    def __init__(self):
+        """
+        Initialise the class. N.B. in a full implementation of a class deriving
+        from Plugin the self.* values should be changed.
+        """
+        super().__init__()
+        self._input_dir = None
+        self._output_dir = None
+        self._output_file = None
+        self._data_file = None
+
+    # def __call__(self):
+    #     return self
+
+    @property
+    def get_input_dir(self):
+        """
+        Return plugin input directory
+        """
+        return self._input_dir
+
+    @property
+    def get_output_dir(self):
+        """
+        Return plugin output directory
+        """
+        return self._output_dir
+
+    @property
+    def get_output_file(self):
+        """
+        Return plugin output file
+        """
+        return self._output_file
+
+    @property
     def get_data_file(self):
         """
         Return the file the plugin will parse
@@ -59,24 +133,30 @@ class Plugin(object):
         """
         self._output_dir = file
 
-    def set_os_version(self, osx_version):
+    def set_output_file(self, output_file):
         """
-        Set the version of OSX to be run
+        Set the output file for the plugin
         """
-        self._os_version = osx_version
+        self._output_file = output_file
 
-    # def parse(self):
-    #     """
-    #     Public function called to parse the data file set in __init__, override as necessary
-    #     """
-    #     pass
+    def set_data_file(self, data_file):
+        """
+        Set the data file to parse
+        """
+        self._data_file = data_file
 
-    @staticmethod
-    def pprint(data):
+    def parse(self):
         """
-        Pretty print format the data
+        Public function called to parse the data file set in __init__, override as necessary
         """
-        return pprint.pformat(data, indent=4, width=80).replace("\n", "\r\n") + "\r\n"
+
+
+    # @staticmethod
+    # def pprint(data):
+    #     """
+    #     Pretty print format the data
+    #     """
+    #     return pprint.pformat(data, indent=4, width=80).replace("\n", "\r\n") + "\r\n"
 
     def __str__(self):
         """

@@ -1,4 +1,4 @@
-from riplib.Plugin import Plugin
+from riplib.plugin import Plugin
 import riplib.ccl_bplist
 import codecs
 import datetime

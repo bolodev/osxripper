@@ -1,3 +1,4 @@
+""" Module for converting time formats """
 import datetime
 
 
@@ -10,101 +11,101 @@ def get_gregorian_seconds(delta_date):
     """
     Get the date time with a second delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return GREGORIAN_1601 + datetime.timedelta(seconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_gregorian_micros(delta_date):
     """
     Get the date time with a microsecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return GREGORIAN_1601 + datetime.timedelta(microseconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_gregorian_millis(delta_date):
     """
     Get the date time with a millisecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return GREGORIAN_1601 + datetime.timedelta(milliseconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_unix_seconds(delta_date):
     """
     Get the date time with a second delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return UNIX_EPOCH + datetime.timedelta(seconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_unix_micros(delta_date):
     """
     Get the date time with a millisecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return UNIX_EPOCH + datetime.timedelta(microseconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_unix_millis(delta_date):
     """
     Get the date time with a millisecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return UNIX_EPOCH + datetime.timedelta(milliseconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_cocoa_millis(delta_date):
     """
     Get the date time with a millisecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return COCOA_EPOCH + datetime.timedelta(milliseconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
 
 
 def get_cocoa_seconds(delta_date):
     """
     Get the date time with a millisecond delta
     """
-    if delta_date is None:
-        return "[ERROR] Not a date value: None"
-    else:
+    if delta_date is not None:
         try:
             return COCOA_EPOCH + datetime.timedelta(seconds=delta_date)
         except OverflowError:
             "[ERROR] unknown date value: {0}".format(delta_date)
+    else:
+        return "[ERROR] Not a date value: None"
