@@ -35,37 +35,37 @@ class BluetoothPlist(Plugin):
             file = os.path.join(self._input_dir, "Library", "Preferences", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(file))
 
-        if os.path.isfile(file):
-            bplist = open(file, "rb")
-            plist = riplib.ccl_bplist.load(bplist)
-            bplist.close()
-        else:
-            logging.warning("File: %s does not exist or cannot be found.", file)
-            output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
-            print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-            output_file.close()
-            return
+            if os.path.isfile(file):
+                bplist = open(file, "rb")
+                plist = riplib.ccl_bplist.load(bplist)
+                bplist.close()
+            else:
+                logging.warning("File: %s does not exist or cannot be found.", file)
+                output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+                print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
+                output_file.close()
+                return
 
-        # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-        if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-            parse_macOS = Parse01(output_file, plist)
-            parse_macOS.parse()
-        elif self._os_version == "mavericks":
-            parse_macOS = Parse02(output_file, plist)
-            parse_macOS.parse()
-        elif self._os_version == "mountain_lion":
-            parse_macOS = Parse03(output_file, plist)
-            parse_macOS.parse()
-        elif self._os_version == "lion":
-            parse_macOS = Parse04(output_file, plist)
-            parse_macOS.parse()
-        elif self._os_version == "snow_leopard":
-            parse_macOS = Parse05(output_file, plist)
-            parse_macOS.parse()
-        else:
-            logging.warning("Not a known OSX version.")
-            print("[WARNING] Not a known OSX version.")
-        output_file.write("="*40 + "\r\n\r\n")
+            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+                parse_macOS = Parse01(output_file, plist)
+                parse_macOS.parse()
+            elif self._os_version == "mavericks":
+                parse_macOS = Parse02(output_file, plist)
+                parse_macOS.parse()
+            elif self._os_version == "mountain_lion":
+                parse_macOS = Parse03(output_file, plist)
+                parse_macOS.parse()
+            elif self._os_version == "lion":
+                parse_macOS = Parse04(output_file, plist)
+                parse_macOS.parse()
+            elif self._os_version == "snow_leopard":
+                parse_macOS = Parse05(output_file, plist)
+                parse_macOS.parse()
+            else:
+                logging.warning("Not a known OSX version.")
+                print("[WARNING] Not a known OSX version.")
+            output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
 
