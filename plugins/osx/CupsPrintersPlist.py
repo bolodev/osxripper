@@ -1,8 +1,10 @@
-from riplib.plugin import Plugin
+""" Module for parsing CUPS plist """
 import codecs
 import logging
 import os
 import plistlib
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -19,12 +21,12 @@ class CupsPrintersPlist(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Cups Printers"
-        self._description = "Parse data from org.cups.printers.plist"
-        self._data_file = "org.cups.printers.plist"
-        self._output_file = "Printers.txt"
-        self._type = "plist"
-    
+        self.set_name("Cups Printers")
+        self.set_description("Parse data from org.cups.printers.plist")
+        self.set_data_file("org.cups.printers.plist")
+        self.set_output_file("Printers.txt")
+        self.set_type("plist")
+
     def parse(self):
         """
         Parse /Library/Preferences/org.cups.printers.plist
@@ -66,7 +68,7 @@ class CupsPrintersPlist(Plugin):
                     except KeyError:
                         pass
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.\r\n".format(plist_file))
+                    logging.warning("File: %s does not exist or cannot be found.\r\n", plist_file)
                     of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
                     print("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
             else:
