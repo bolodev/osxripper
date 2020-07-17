@@ -1,7 +1,8 @@
-from riplib.plugin import Plugin
+""" Module for listing applications """
 import codecs
 import logging
 import os
+from riplib.plugin import Plugin
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -22,7 +23,7 @@ class Applications(Plugin):
         self._data_file = ""  # listing directories so this is not needed
         self._output_file = "Applications.txt"
         self._type = "dir_list"
-    
+
     def parse(self):
         """
         List contents of /Applications directory
@@ -44,7 +45,7 @@ class Applications(Plugin):
                     else:
                         of.write("\t{0}\r\n".format(f))
             else:
-                logging.warning("Directory {0} does not exist.".format(applications_dir))
+                logging.warning("Directory %s does not exist.", applications_dir)
                 of.write("[WARNING] Directory {0} does not exist or cannot be found.\r\n".format(applications_dir))
                 print("[WARNING] Directory {0} does not exist.".format(applications_dir))
 
