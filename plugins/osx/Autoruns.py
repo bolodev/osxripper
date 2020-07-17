@@ -18,11 +18,11 @@ class Autoruns(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Autoruns"
-        self._description = "List files in System amd Library Launch* directories "
-        self._data_file = ""  # listing directories so this is not needed
-        self._output_file = "Autoruns.txt"
-        self._type = "dir_list"
+        self.set_name("Autoruns")
+        self.set_description("List files in System amd Library Launch* directories ")
+        self.set_data_file("")  # listing directories so this is not needed
+        self.set_output_file("Autoruns.txt")
+        self.set_type("dir_list")
 
     def parse(self):
         """

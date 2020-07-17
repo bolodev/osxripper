@@ -40,6 +40,7 @@ class AlfPlist(Plugin):
                 logging.warning("File: %s does not exist or cannot be found.", file)
                 output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
+                output_file.close()
                 return
 
             #if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",

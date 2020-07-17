@@ -42,6 +42,8 @@ class AirportPreferences(Plugin):
                 logging.warning("File: %s does not exist or cannot be found.", plist_file)
                 output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
+                output_file.close()
+                return
 
             # if self._os_version in ["big_sur", "catalina"]:
             if self._os_version in ["catalina"]:

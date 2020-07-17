@@ -1,9 +1,10 @@
-from riplib.plugin import Plugin
+""" Module for parsing bluetooth data """
 import binascii
 import codecs
 import logging
 import os
 import riplib.ccl_bplist
+from riplib.plugin import Plugin
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -19,477 +20,455 @@ class BluetoothPlist(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Bluetooth Settings"
-        self._description = "Parse bluetooth connection data."
-        self._output_file = "Networking.txt"
-        self._data_file = "com.apple.Bluetooth.plist"
-        self._type = "bplist"
-        
-    def parse(self): 
+        self.set_name("Bluetooth Settings")
+        self.set_description("Parse bluetooth connection data.")
+        self.set_output_file("Networking.txt")
+        self.set_data_file("com.apple.Bluetooth.plist")
+        self.set_type("bplist")
+
+    def parse(self):
         """
         /Library/Preferences/com.apple.Bluetooth.plist
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             file = os.path.join(self._input_dir, "Library", "Preferences", self._data_file)
-            of.write("Source File: {0}\r\n\r\n".format(file))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-                if os.path.isfile(file):
-                    bplist = open(file, "rb")
-                    plist = riplib.ccl_bplist.load(bplist)
-                    bplist.close()
-                    try:
-                        if "BluetoothVersionNumber" in plist:
-                            of.write("Bluetooth Version Number: {0}\r\n".format(plist["BluetoothVersionNumber"]))
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
 
-                        if "IgnoredDevices" in plist:
-                            if len(plist["IgnoredDevices"]) == 0:
-                                of.write("Ignored Devices:\r\n\tNo ignored devices listed.\r\n")
-                            else:
-                                of.write("Ignored Devices:\r\n")
-                                for item in plist["IgnoredDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(item))
-                        
-                        if "BRPairedDevices" in plist:
-                            if len(plist["BRPairedDevices"]) == 0:
-                                of.write("BR Paired Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("BR Paired Devices:\r\n")
-                                for item in plist["BRPairedDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(item))
-                        
-                        if "ControllerPowerState" in plist:
-                            of.write("Controller Power State: {0}\r\n".format(plist["BluetoothVersionNumber"]))
-                        
-                        if "HIDDevices" in plist:
-                            if len(plist["HIDDevices"]) == 0:
-                                of.write("HID Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("HID Devices:\r\n")
-                                for item in plist["HIDDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(item))
-                        
-                        # PersistentPorts NOTHING OF INTEREST?????
-                        
-                        if "DeviceCache" in plist:
-                            for device in plist["DeviceCache"]:
-                                of.write("Device Cache\r\n")
-                                of.write("\tDevice: {0}\r\n".format(device))
+        if os.path.isfile(file):
+            bplist = open(file, "rb")
+            plist = riplib.ccl_bplist.load(bplist)
+            bplist.close()
+        else:
+            logging.warning("File: %s does not exist or cannot be found.", file)
+            output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+            print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
+            output_file.close()
+            return
 
-                                if "VendorID" in plist["DeviceCache"][device]:
-                                    of.write("\t\tVendor ID: {0}\r\n".format(plist["DeviceCache"][device]["VendorID"]))
-                                
-                                if "Name" in plist["DeviceCache"][device]:
-                                    of.write("\t\tName: {0}\r\n".format(plist["DeviceCache"][device]["Name"]))
-                                
-                                if "LMPSubversion" in plist["DeviceCache"][device]:
-                                    of.write("\t\tLMP Subversion: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["LMPSubversion"]))
-                                
-                                if "PageScanPeriod" in plist["DeviceCache"][device]:
-                                    of.write("\t\tPage Scan Period: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["PageScanPeriod"]))
-                                
-                                if "LastNameUpdate" in plist["DeviceCache"][device]:
-                                    of.write("\t\tLast Name Update: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["LastNameUpdate"]))
-                                
-                                if "SupportedFeatures" in plist["DeviceCache"][device]:
-                                    of.write("\t\tSupported Features: {0}\r\n"
-                                             .format(binascii
-                                                     .hexlify(plist["DeviceCache"][device]["SupportedFeatures"])))
-                                
-                                if "ProductID" in plist["DeviceCache"][device]:
-                                    of.write("\t\tProduct ID: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["ProductID"]))
-                                
-                                if "LMPVersion" in plist["DeviceCache"][device]:
-                                    of.write("\t\tLMP Version: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["LMPVersion"]))
-                                
-                                if "PageScanRepetitionMode" in plist["DeviceCache"][device]:
-                                    of.write("\t\tPage Scan Repetition Mode: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["PageScanRepetitionMode"]))
-                                
-                                if "LastInquiryUpdate" in plist["DeviceCache"][device]:
-                                    of.write("\t\tLast Inquiry Update: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["LastInquiryUpdate"]))
-                                    
-                                if "Manufacturer" in plist["DeviceCache"][device]:
-                                    of.write("\t\tManufacturer: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["Manufacturer"]))
-                                
-                                if "ClockOffset" in plist["DeviceCache"][device]:
-                                    of.write("\t\tClock Offset: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["ClockOffset"]))
-                                
-                                if "PageScanMode" in plist["DeviceCache"][device]:
-                                    of.write("\t\tPage Scan Mode: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["PageScanMode"]))
-                                
-                                if "ClassOfDevice" in plist["DeviceCache"][device]:
-                                    of.write("\t\tClass Of Device: {0}\r\n"
-                                             .format(plist["DeviceCache"][device]["ClassOfDevice"]))
-                            of.write("\r\n")
-                            
-                        if "D2D MAC Address" in plist:
-                            of.write("D2D MAC Address: {0}\r\n".format(binascii.hexlify(plist["D2D MAC Address"])))
-                        
-                        # PersistentPortsServices  NOTHING OF INTEREST?????
-                        
-                        if "PairedDevices" in plist:
-                            if len(plist["PairedDevices"]) == 0:
-                                of.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("Paired Devices:\r\n")
-                                for item in plist["PairedDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(item))
-                    except KeyError:
-                        pass
-                    of.write("\r\n")
-                else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-                
-            elif self._os_version == "mavericks":
-                if os.path.isfile(file):
-                    bplist = open(file, "rb")
-                    plist = riplib.ccl_bplist.load(bplist)
-                    bplist.close()
-                    try:
-                        if "PairedDevices" in plist:
-                            if len(plist["PairedDevices"]) == 0:
-                                of.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("Paired Devices:\r\n")
-                                for paired_device in plist["PairedDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(paired_device))
-                                    
-                        if "DaemonControllersConfigurationKey" in plist:
-                            if "DaemonControllersConfigurationKey" in plist:
-                                of.write("Daemon Controllers Configuration Key:\r\n")
-                                for dmcck_key in plist["DaemonControllersConfigurationKey"]:
-                                    of.write("\t{0}\r\n".format(dmcck_key))
-                                    for item in plist["DaemonControllersConfigurationKey"][dmcck_key]:
-                                        of.write("\t\t{0}: {1}\r\n"
-                                                 .format(item,
-                                                         plist["DaemonControllersConfigurationKey"][dmcck_key][item]))
-                        if "ControllerPowerState" in plist:
-                            of.write("Controller Power State: {0}\r\n".format(plist["ControllerPowerState"]))
-                        if "HIDDevices" in plist:
-                            of.write("HIDDevices\r\n")
-                            for hid_device in plist["HIDDevices"]:
-                                of.write("\tHID Device: {0}\r\n".format(hid_device))
-                        if "BluetoothVersionNumber" in plist:
-                            of.write("Bluetooth Version Number: {0}\r\n".format(plist["BluetoothVersionNumber"]))
-                        if "D2D MAC Address" in plist:
-                            of.write("D2D MAC Address :{0}\r\n".format(plist["D2D MAC Address"]))
-                        if "DeviceCache" in plist:
-                            of.write("Device Cache\r\n")
-                            for cached_device in plist["DeviceCache"]:
-                                of.write("\tCached Device: {0}\r\n".format(cached_device))
-                                for device_data in plist["DeviceCache"][cached_device]:
-                                    if "VendorID" in device_data:
-                                        of.write("\t\tVendor ID: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["VendorID"]))
-                                    if "Name" in device_data:
-                                        of.write("\t\tName: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Name"]))
-                                    if "LMPSubversion" in device_data:
-                                        of.write("\t\tLMP Subversion: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPSubversion"]))
-                                    if "LastNameUpdate" in device_data:
-                                        of.write("\t\tLast Name Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastNameUpdate"]))
-                                    if "ProductID" in device_data:
-                                        of.write("\t\tProduct ID: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ProductID"]))
-                                    if "LMPVersion" in device_data:
-                                        of.write("\t\tLMP Version: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPVersion"]))
-                                    if "BatteryPercent" in device_data:
-                                        of.write("\t\tBattery Percent: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["BatteryPercent"]))
-                                    if "Manufacturer" in device_data:
-                                        of.write("\t\tManufacturer: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Manufacturer"]))
-                                    if "ClassOfDevice" in device_data:
-                                        of.write("\t\tClass Of Device: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClassOfDevice"]))
-                                    if "LastServicesUpdate" in device_data:
-                                        of.write("\t\tLast Services Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastServicesUpdate"]))
+        # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+        if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+            parse_macOS = Parse01(output_file, plist)
+            parse_macOS.parse()
+        elif self._os_version == "mavericks":
+            parse_macOS = Parse02(output_file, plist)
+            parse_macOS.parse()
+        elif self._os_version == "mountain_lion":
+            parse_macOS = Parse03(output_file, plist)
+            parse_macOS.parse()
+        elif self._os_version == "lion":
+            parse_macOS = Parse04(output_file, plist)
+            parse_macOS.parse()
+        elif self._os_version == "snow_leopard":
+            parse_macOS = Parse05(output_file, plist)
+            parse_macOS.parse()
+        else:
+            logging.warning("Not a known OSX version.")
+            print("[WARNING] Not a known OSX version.")
+        output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
 
-                    except KeyError:
-                        pass
-                    of.write("\r\n")
+
+class Parse01():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "BluetoothVersionNumber" in self._data_file:
+                self._output_file.write("Bluetooth Version Number: {0}\r\n".format(self._data_file["BluetoothVersionNumber"]))
+
+            if "IgnoredDevices" in self._data_file:
+                if len(self._data_file["IgnoredDevices"]) == 0:
+                    self._output_file.write("Ignored Devices:\r\n\tNo ignored devices listed.\r\n")
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-                    
-            elif self._os_version == "mountain_lion":
-                if os.path.isfile(file):
-                    bplist = open(file, "rb")
-                    plist = riplib.ccl_bplist.load(bplist)
-                    bplist.close()
-                    try:
-                        if "PairedDevices" in plist:
-                            if len(plist["PairedDevices"]) == 0:
-                                of.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("Paired Devices:\r\n")
-                                for paired_device in plist["PairedDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(paired_device))
-                        if "D2D MAC Address" in plist:
-                            of.write("D2D MAC Address :{0}\r\n".format(plist["D2D MAC Address"]))
-                        if "DaemonControllersConfigurationKey" in plist:
-                            of.write("Daemon Controllers Configuration Key:\r\n")
-                            for dmcck_key in plist["DaemonControllersConfigurationKey"]:
-                                of.write("\t{0}\r\n".format(dmcck_key))
-                                for item in plist["DaemonControllersConfigurationKey"][dmcck_key]:
-                                    of.write("\t\t{0}: {1}\r\n"
-                                             .format(item, plist["DaemonControllersConfigurationKey"][dmcck_key][item]))
-                        if "PANInterfaces" in plist:
-                            of.write("PAN Interfaces:\r\n")
-                            for pan_interface in plist["PANInterfaces"]:
-                                of.write("\tPAN Interface: {0}\r\n".format(pan_interface))
-                        if "ControllerPowerState" in plist:
-                            of.write("Controller Power State: {0}\r\n".format(plist["ControllerPowerState"]))
-                        if "HIDDevices" in plist:
-                            of.write("HIDDevices\r\n")
-                            for hid_device in plist["HIDDevices"]:
-                                of.write("\tHID Device: {0}\r\n".format(hid_device))
-                        if "DeviceCache" in plist:
-                            of.write("Device Cache\r\n")
-                            for cached_device in plist["DeviceCache"]:
-                                of.write("\tCached Device: {0}\r\n".format(cached_device))
-                                for device_data in plist["DeviceCache"][cached_device]:
-                                    if "Name" in device_data:
-                                        of.write("\t\tName: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Name"]))
-                                    if "Manufacturer" in device_data:
-                                        of.write("\t\tManufacturer: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Manufacturer"]))
-                                    if "ClassOfDevice" in device_data:
-                                        of.write("\t\tClass Of Device: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClassOfDevice"]))
-                                    if "BatteryPercent" in device_data:
-                                        of.write("\t\tBattery Percent: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["BatteryPercent"]))
-                                    if "ClockOffset" in device_data:
-                                        of.write("\t\tClock Offset: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClockOffset"]))
-                                    if "LastNameUpdate" in device_data:
-                                        of.write("\t\tLast Name Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastNameUpdate"]))
-                                    if "LastServicesUpdate" in device_data:
-                                        of.write("\t\tLast Services Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastServicesUpdate"]))
-                                    if "LastInquiryUpdate" in device_data:
-                                        of.write("\t\tLast Inquiry Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastInquiryUpdate"]))
-                                    if "LMPVersion" in device_data:
-                                        of.write("\t\tLMP Version: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPVersion"]))
-                                    if "LMPSubversion" in device_data:
-                                        of.write("\t\tLMP Subversion: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPSubversion"]))
-                                    if "InquiryRSSI" in device_data:
-                                        of.write("\t\tInquiry RSSI: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["InquiryRSSI"]))
-                                    if "PageScanMode" in device_data:
-                                        of.write("\t\tPage Scan Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanMode"]))
-                                    if "PageScanPeriod" in device_data:
-                                        of.write("\t\tPage Scan Period: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanPeriod"]))
-                                    if "PageScanRepetitionMode" in device_data:
-                                        of.write("\t\tPage Scan Repetition Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
-                                    # EIRData NOT PARSED
-                                    # Services NOT PARSED
-                        # PersistentPorts NOT PARSED
-                                
-                    except KeyError:
-                        pass
-                    of.write("\r\n")
+                    self._output_file.write("Ignored Devices:\r\n")
+                    for item in self._data_file["IgnoredDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(item))
+
+            if "BRPairedDevices" in self._data_file:
+                if len(self._data_file["BRPairedDevices"]) == 0:
+                    self._output_file.write("BR Paired Devices:\r\n\tNo paired devices listed.\r\n")
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-            elif self._os_version == "lion":
-                if os.path.isfile(file):
-                    bplist = open(file, "rb")
-                    plist = riplib.ccl_bplist.load(bplist)
-                    bplist.close()
-                    try:
-                        if "DaemonControllersConfigurationKey" in plist:
-                            of.write("Daemon Controllers Configuration Key:\r\n")
-                            for dmcck_key in plist["DaemonControllersConfigurationKey"]:
-                                of.write("\t{0}\r\n".format(dmcck_key))
-                                for item in plist["DaemonControllersConfigurationKey"][dmcck_key]:
-                                    of.write("\t\t{0}: {1}\r\n"
-                                             .format(item, plist["DaemonControllersConfigurationKey"][dmcck_key][item]))
-                        if "PANInterfaces" in plist:
-                            of.write("PAN Interfaces:\r\n")
-                            for pan_interface in plist["PANInterfaces"]:
-                                of.write("\tPAN Interface: {0}\r\n".format(pan_interface))
-                        if "ControllerPowerState" in plist:
-                            of.write("Controller Power State: {0}\r\n".format(plist["ControllerPowerState"]))
-                        if "HIDDevices" in plist:
-                            of.write("HIDDevices\r\n")
-                            for hid_device in plist["HIDDevices"]:
-                                of.write("\tHID Device: {0}\r\n".format(hid_device))
-                        if "DeviceCache" in plist:
-                            of.write("Device Cache\r\n")
-                            for cached_device in plist["DeviceCache"]:
-                                of.write("\tCached Device: {0}\r\n".format(cached_device))
-                                for device_data in plist["DeviceCache"][cached_device]:
-                                    if "Name" in device_data:
-                                        of.write("\t\tName: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Name"]))
-                                    if "Manufacturer" in device_data:
-                                        of.write("\t\tManufacturer: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Manufacturer"]))
-                                    if "ClassOfDevice" in device_data:
-                                        of.write("\t\tClass Of Device: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClassOfDevice"]))
-                                    if "BatteryPercent" in device_data:
-                                        of.write("\t\tBattery Percent: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["BatteryPercent"]))
-                                    if "ClockOffset" in device_data:
-                                        of.write("\t\tClock Offset: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClockOffset"]))
-                                    if "LastNameUpdate" in device_data:
-                                        of.write("\t\tLast Name Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastNameUpdate"]))
-                                    if "LastServicesUpdate" in device_data:
-                                        of.write("\t\tLast Services Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastServicesUpdate"]))
-                                    if "LastInquiryUpdate" in device_data:
-                                        of.write("\t\tLast Inquiry Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastInquiryUpdate"]))
-                                    if "LMPVersion" in device_data:
-                                        of.write("\t\tLMP Version: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPVersion"]))
-                                    if "LMPSubversion" in device_data:
-                                        of.write("\t\tLMP Subversion: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPSubversion"]))
-                                    if "InquiryRSSI" in device_data:
-                                        of.write("\t\tInquiry RSSI: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["InquiryRSSI"]))
-                                    if "PageScanMode" in device_data:
-                                        of.write("\t\tPage Scan Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanMode"]))
-                                    if "PageScanPeriod" in device_data:
-                                        of.write("\t\tPage Scan Period: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanPeriod"]))
-                                    if "PageScanRepetitionMode" in device_data:
-                                        of.write("\t\tPage Scan Repetition Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
-                                    # EIRData NOT PARSED
-                                    # Services NOT PARSED
-                        # PersistentPorts NOT PARSED
-                        # PairedDevices ARRAY
-                        if "PairedDevices" in plist:
-                            if len(plist["PairedDevices"]) == 0:
-                                of.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
-                            else:
-                                of.write("Paired Devices:\r\n")
-                                for paired_device in plist["PairedDevices"]:
-                                    of.write("\tDevice: {0}\r\n".format(paired_device))
-                    except KeyError:
-                        pass
-                    of.write("\r\n")
+                    self._output_file.write("BR Paired Devices:\r\n")
+                    for item in self._data_file["BRPairedDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(item))
+
+            if "ControllerPowerState" in self._data_file:
+                self._output_file.write("Controller Power State: {0}\r\n".format(self._data_file["BluetoothVersionNumber"]))
+
+            if "HIDDevices" in self._data_file:
+                if len(self._data_file["HIDDevices"]) == 0:
+                    self._output_file.write("HID Devices:\r\n\tNo paired devices listed.\r\n")
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-            elif self._os_version == "snow_leopard":
-                if os.path.isfile(file):
-                    bplist = open(file, "rb")
-                    plist = riplib.ccl_bplist.load(bplist)
-                    bplist.close()
-                    try:
-                        if "BluetoothAutoSeekHIDDevices" in plist:
-                            of.write("Bluetooth Auto Seek HID Devices: {0}\r\n"
-                                     .format(plist["BluetoothAutoSeekHIDDevices"]))
-                        if "ControllerPowerState" in plist:
-                            of.write("Controller Power State         : {0}\r\n".format(plist["ControllerPowerState"]))
-                        if "BluetoothVersionNumber" in plist:
-                            of.write("Bluetooth Version Number       : {0}\r\n".format(plist["BluetoothVersionNumber"]))
-                        if "DaemonControllersConfigurationKey" in plist:
-                            of.write("Daemon Controllers Configuration Key:\r\n")
-                            for dmcck_key in plist["DaemonControllersConfigurationKey"]:
-                                of.write("\t{0}\r\n".format(dmcck_key))
-                                for item in plist["DaemonControllersConfigurationKey"][dmcck_key]:
-                                    of.write("\t\t{0}: {1}\r\n"
-                                             .format(item, plist["DaemonControllersConfigurationKey"][dmcck_key][item]))
-                        if "HIDDevices" in plist:
-                            hid_array = plist["PairedDevices"]
-                            of.write("HID Devices: {0}\r\n")
-                            for hid_device in hid_array:
-                                of.write("\t{0}\r\n".format(hid_device))
-                        if "DeviceCache" in plist:
-                            of.write("Device Cache\r\n")
-                            for cached_device in plist["DeviceCache"]:
-                                of.write("\tCached Device: {0}\r\n".format(cached_device))
-                                for device_data in plist["DeviceCache"][cached_device]:
-                                    if "Name" in device_data:
-                                        of.write("\t\tName: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Name"]))
-                                    if "Manufacturer" in device_data:
-                                        of.write("\t\tManufacturer: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["Manufacturer"]))
-                                    if "ClassOfDevice" in device_data:
-                                        of.write("\t\tClass Of Device: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClassOfDevice"]))
-                                    if "BatteryPercent" in device_data:
-                                        of.write("\t\tBattery Percent: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["BatteryPercent"]))
-                                    if "ClockOffset" in device_data:
-                                        of.write("\t\tClock Offset: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["ClockOffset"]))
-                                    if "LastNameUpdate" in device_data:
-                                        of.write("\t\tLast Name Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastNameUpdate"]))
-                                    if "LastServicesUpdate" in device_data:
-                                        of.write("\t\tLast Services Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastServicesUpdate"]))
-                                    if "LastInquiryUpdate" in device_data:
-                                        of.write("\t\tLast Inquiry Update: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LastInquiryUpdate"]))
-                                    if "LMPVersion" in device_data:
-                                        of.write("\t\tLMP Version: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPVersion"]))
-                                    if "LMPSubversion" in device_data:
-                                        of.write("\t\tLMP Subversion: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["LMPSubversion"]))
-                                    if "InquiryRSSI" in device_data:
-                                        of.write("\t\tInquiry RSSI: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["InquiryRSSI"]))
-                                    if "PageScanMode" in device_data:
-                                        of.write("\t\tPage Scan Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanMode"]))
-                                    if "PageScanPeriod" in device_data:
-                                        of.write("\t\tPage Scan Period: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanPeriod"]))
-                                    if "PageScanRepetitionMode" in device_data:
-                                        of.write("\t\tPage Scan Repetition Mode: {0}\r\n"
-                                                 .format(plist["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
-                        if "PairedDevices" in plist:
-                            paired_array = plist["PairedDevices"]
-                            of.write("Paired Devices:\r\n")
-                            for paired_device in paired_array:
-                                of.write("\t{0}\r\n".format(paired_device))
-                    except KeyError:
-                        pass
-                    of.write("\r\n")
-            else:
-                logging.warning("Not a known OSX version.")
-                print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+                    self._output_file.write("HID Devices:\r\n")
+                    for item in self._data_file["HIDDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(item))
+
+            # PersistentPorts NOTHING OF INTEREST?????
+
+            if "DeviceCache" in self._data_file:
+                for device in self._data_file["DeviceCache"]:
+                    self._output_file.write("Device Cache\r\n")
+                    self._output_file.write("\tDevice: {0}\r\n".format(device))
+
+                    if "VendorID" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tVendor ID: {0}\r\n".format(self._data_file["DeviceCache"][device]["VendorID"]))
+
+                    if "Name" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tName: {0}\r\n".format(self._data_file["DeviceCache"][device]["Name"]))
+
+                    if "LMPSubversion" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tLMP Subversion: {0}\r\n".format(self._data_file["DeviceCache"][device]["LMPSubversion"]))
+
+                    if "PageScanPeriod" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tPage Scan Period: {0}\r\n".format(self._data_file["DeviceCache"][device]["PageScanPeriod"]))
+
+                    if "LastNameUpdate" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tLast Name Update: {0}\r\n".format(self._data_file["DeviceCache"][device]["LastNameUpdate"]))
+
+                    if "SupportedFeatures" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tSupported Features: {0}\r\n".format(binascii.hexlify(self._data_file["DeviceCache"][device]["SupportedFeatures"])))
+
+                    if "ProductID" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tProduct ID: {0}\r\n".format(self._data_file["DeviceCache"][device]["ProductID"]))
+
+                    if "LMPVersion" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tLMP Version: {0}\r\n".format(self._data_file["DeviceCache"][device]["LMPVersion"]))
+
+                    if "PageScanRepetitionMode" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tPage Scan Repetition Mode: {0}\r\n".format(self._data_file["DeviceCache"][device]["PageScanRepetitionMode"]))
+
+                    if "LastInquiryUpdate" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tLast Inquiry Update: {0}\r\n".format(self._data_file["DeviceCache"][device]["LastInquiryUpdate"]))
+
+                    if "Manufacturer" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tManufacturer: {0}\r\n".format(self._data_file["DeviceCache"][device]["Manufacturer"]))
+
+                    if "ClockOffset" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tClock Offset: {0}\r\n".format(self._data_file["DeviceCache"][device]["ClockOffset"]))
+
+                    if "PageScanMode" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tPage Scan Mode: {0}\r\n".format(self._data_file["DeviceCache"][device]["PageScanMode"]))
+
+                    if "ClassOfDevice" in self._data_file["DeviceCache"][device]:
+                        self._output_file.write("\t\tClass Of Device: {0}\r\n".format(self._data_file["DeviceCache"][device]["ClassOfDevice"]))
+                self._output_file.write("\r\n")
+
+            if "D2D MAC Address" in self._data_file:
+                self._output_file.write("D2D MAC Address: {0}\r\n".format(binascii.hexlify(self._data_file["D2D MAC Address"])))
+
+            # PersistentPortsServices  NOTHING OF INTEREST?????
+
+            if "PairedDevices" in self._data_file:
+                if len(self._data_file["PairedDevices"]) == 0:
+                    self._output_file.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
+                else:
+                    self._output_file.write("Paired Devices:\r\n")
+                    for item in self._data_file["PairedDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(item))
+        except KeyError:
+            pass
+        self._output_file.write("\r\n")
+
+class Parse02():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "PairedDevices" in self._data_file:
+                if len(self._data_file["PairedDevices"]) == 0:
+                    self._output_file.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
+                else:
+                    self._output_file.write("Paired Devices:\r\n")
+                    for paired_device in self._data_file["PairedDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(paired_device))
+
+            if "DaemonControllersConfigurationKey" in self._data_file:
+                if "DaemonControllersConfigurationKey" in self._data_file:
+                    self._output_file.write("Daemon Controllers Configuration Key:\r\n")
+                    for dmcck_key in self._data_file["DaemonControllersConfigurationKey"]:
+                        self._output_file.write("\t{0}\r\n".format(dmcck_key))
+                        for item in self._data_file["DaemonControllersConfigurationKey"][dmcck_key]:
+                            self._output_file.write("\t\t{0}: {1}\r\n".format(item, self._data_file["DaemonControllersConfigurationKey"][dmcck_key][item]))
+            if "ControllerPowerState" in self._data_file:
+                self._output_file.write("Controller Power State: {0}\r\n".format(self._data_file["ControllerPowerState"]))
+            if "HIDDevices" in self._data_file:
+                self._output_file.write("HIDDevices\r\n")
+                for hid_device in self._data_file["HIDDevices"]:
+                    self._output_file.write("\tHID Device: {0}\r\n".format(hid_device))
+            if "BluetoothVersionNumber" in self._data_file:
+                self._output_file.write("Bluetooth Version Number: {0}\r\n".format(self._data_file["BluetoothVersionNumber"]))
+            if "D2D MAC Address" in self._data_file:
+                self._output_file.write("D2D MAC Address :{0}\r\n".format(self._data_file["D2D MAC Address"]))
+            if "DeviceCache" in self._data_file:
+                self._output_file.write("Device Cache\r\n")
+                for cached_device in self._data_file["DeviceCache"]:
+                    self._output_file.write("\tCached Device: {0}\r\n".format(cached_device))
+                    for device_data in self._data_file["DeviceCache"][cached_device]:
+                        if "VendorID" in device_data:
+                            self._output_file.write("\t\tVendor ID: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["VendorID"]))
+                        if "Name" in device_data:
+                            self._output_file.write("\t\tName: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Name"]))
+                        if "LMPSubversion" in device_data:
+                            self._output_file.write("\t\tLMP Subversion: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPSubversion"]))
+                        if "LastNameUpdate" in device_data:
+                            self._output_file.write("\t\tLast Name Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastNameUpdate"]))
+                        if "ProductID" in device_data:
+                            self._output_file.write("\t\tProduct ID: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ProductID"]))
+                        if "LMPVersion" in device_data:
+                            self._output_file.write("\t\tLMP Version: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPVersion"]))
+                        if "BatteryPercent" in device_data:
+                            self._output_file.write("\t\tBattery Percent: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["BatteryPercent"]))
+                        if "Manufacturer" in device_data:
+                            self._output_file.write("\t\tManufacturer: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Manufacturer"]))
+                        if "ClassOfDevice" in device_data:
+                            self._output_file.write("\t\tClass Of Device: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClassOfDevice"]))
+                        if "LastServicesUpdate" in device_data:
+                            self._output_file.write("\t\tLast Services Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastServicesUpdate"]))
+
+        except KeyError:
+            pass
+        self._output_file.write("\r\n")
+
+class Parse03():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "PairedDevices" in self._data_file:
+                if len(self._data_file["PairedDevices"]) == 0:
+                    self._output_file.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
+                else:
+                    self._output_file.write("Paired Devices:\r\n")
+                    for paired_device in self._data_file["PairedDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(paired_device))
+            if "D2D MAC Address" in self._data_file:
+                self._output_file.write("D2D MAC Address :{0}\r\n".format(self._data_file["D2D MAC Address"]))
+            if "DaemonControllersConfigurationKey" in self._data_file:
+                self._output_file.write("Daemon Controllers Configuration Key:\r\n")
+                for dmcck_key in self._data_file["DaemonControllersConfigurationKey"]:
+                    self._output_file.write("\t{0}\r\n".format(dmcck_key))
+                    for item in self._data_file["DaemonControllersConfigurationKey"][dmcck_key]:
+                        self._output_file.write("\t\t{0}: {1}\r\n".format(item, self._data_file["DaemonControllersConfigurationKey"][dmcck_key][item]))
+            if "PANInterfaces" in self._data_file:
+                self._output_file.write("PAN Interfaces:\r\n")
+                for pan_interface in self._data_file["PANInterfaces"]:
+                    self._output_file.write("\tPAN Interface: {0}\r\n".format(pan_interface))
+            if "ControllerPowerState" in self._data_file:
+                self._output_file.write("Controller Power State: {0}\r\n".format(self._data_file["ControllerPowerState"]))
+            if "HIDDevices" in self._data_file:
+                self._output_file.write("HIDDevices\r\n")
+                for hid_device in self._data_file["HIDDevices"]:
+                    self._output_file.write("\tHID Device: {0}\r\n".format(hid_device))
+            if "DeviceCache" in self._data_file:
+                self._output_file.write("Device Cache\r\n")
+                for cached_device in self._data_file["DeviceCache"]:
+                    self._output_file.write("\tCached Device: {0}\r\n".format(cached_device))
+                    for device_data in self._data_file["DeviceCache"][cached_device]:
+                        if "Name" in device_data:
+                            self._output_file.write("\t\tName: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Name"]))
+                        if "Manufacturer" in device_data:
+                            self._output_file.write("\t\tManufacturer: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Manufacturer"]))
+                        if "ClassOfDevice" in device_data:
+                            self._output_file.write("\t\tClass Of Device: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClassOfDevice"]))
+                        if "BatteryPercent" in device_data:
+                            self._output_file.write("\t\tBattery Percent: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["BatteryPercent"]))
+                        if "ClockOffset" in device_data:
+                            self._output_file.write("\t\tClock Offset: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClockOffset"]))
+                        if "LastNameUpdate" in device_data:
+                            self._output_file.write("\t\tLast Name Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastNameUpdate"]))
+                        if "LastServicesUpdate" in device_data:
+                            self._output_file.write("\t\tLast Services Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastServicesUpdate"]))
+                        if "LastInquiryUpdate" in device_data:
+                            self._output_file.write("\t\tLast Inquiry Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastInquiryUpdate"]))
+                        if "LMPVersion" in device_data:
+                            self._output_file.write("\t\tLMP Version: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPVersion"]))
+                        if "LMPSubversion" in device_data:
+                            self._output_file.write("\t\tLMP Subversion: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPSubversion"]))
+                        if "InquiryRSSI" in device_data:
+                            self._output_file.write("\t\tInquiry RSSI: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["InquiryRSSI"]))
+                        if "PageScanMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanMode"]))
+                        if "PageScanPeriod" in device_data:
+                            self._output_file.write("\t\tPage Scan Period: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanPeriod"]))
+                        if "PageScanRepetitionMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Repetition Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
+                        # EIRData NOT PARSED
+                        # Services NOT PARSED
+            # PersistentPorts NOT PARSED
+        except KeyError:
+            pass
+        self._output_file.write("\r\n")
+
+class Parse04():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "DaemonControllersConfigurationKey" in self._data_file:
+                self._output_file.write("Daemon Controllers Configuration Key:\r\n")
+                for dmcck_key in self._data_file["DaemonControllersConfigurationKey"]:
+                    self._output_file.write("\t{0}\r\n".format(dmcck_key))
+                    for item in self._data_file["DaemonControllersConfigurationKey"][dmcck_key]:
+                        self._output_file.write("\t\t{0}: {1}\r\n".format(item, self._data_file["DaemonControllersConfigurationKey"][dmcck_key][item]))
+            if "PANInterfaces" in self._data_file:
+                self._output_file.write("PAN Interfaces:\r\n")
+                for pan_interface in self._data_file["PANInterfaces"]:
+                    self._output_file.write("\tPAN Interface: {0}\r\n".format(pan_interface))
+            if "ControllerPowerState" in self._data_file:
+                self._output_file.write("Controller Power State: {0}\r\n".format(self._data_file["ControllerPowerState"]))
+            if "HIDDevices" in self._data_file:
+                self._output_file.write("HIDDevices\r\n")
+                for hid_device in self._data_file["HIDDevices"]:
+                    self._output_file.write("\tHID Device: {0}\r\n".format(hid_device))
+            if "DeviceCache" in self._data_file:
+                self._output_file.write("Device Cache\r\n")
+                for cached_device in self._data_file["DeviceCache"]:
+                    self._output_file.write("\tCached Device: {0}\r\n".format(cached_device))
+                    for device_data in self._data_file["DeviceCache"][cached_device]:
+                        if "Name" in device_data:
+                            self._output_file.write("\t\tName: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Name"]))
+                        if "Manufacturer" in device_data:
+                            self._output_file.write("\t\tManufacturer: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Manufacturer"]))
+                        if "ClassOfDevice" in device_data:
+                            self._output_file.write("\t\tClass Of Device: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClassOfDevice"]))
+                        if "BatteryPercent" in device_data:
+                            self._output_file.write("\t\tBattery Percent: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["BatteryPercent"]))
+                        if "ClockOffset" in device_data:
+                            self._output_file.write("\t\tClock Offset: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClockOffset"]))
+                        if "LastNameUpdate" in device_data:
+                            self._output_file.write("\t\tLast Name Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastNameUpdate"]))
+                        if "LastServicesUpdate" in device_data:
+                            self._output_file.write("\t\tLast Services Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastServicesUpdate"]))
+                        if "LastInquiryUpdate" in device_data:
+                            self._output_file.write("\t\tLast Inquiry Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastInquiryUpdate"]))
+                        if "LMPVersion" in device_data:
+                            self._output_file.write("\t\tLMP Version: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPVersion"]))
+                        if "LMPSubversion" in device_data:
+                            self._output_file.write("\t\tLMP Subversion: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPSubversion"]))
+                        if "InquiryRSSI" in device_data:
+                            self._output_file.write("\t\tInquiry RSSI: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["InquiryRSSI"]))
+                        if "PageScanMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanMode"]))
+                        if "PageScanPeriod" in device_data:
+                            self._output_file.write("\t\tPage Scan Period: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanPeriod"]))
+                        if "PageScanRepetitionMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Repetition Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
+                        # EIRData NOT PARSED
+                        # Services NOT PARSED
+            # PersistentPorts NOT PARSED
+            # PairedDevices ARRAY
+            if "PairedDevices" in self._data_file:
+                if len(self._data_file["PairedDevices"]) == 0:
+                    self._output_file.write("Paired Devices:\r\n\tNo paired devices listed.\r\n")
+                else:
+                    self._output_file.write("Paired Devices:\r\n")
+                    for paired_device in self._data_file["PairedDevices"]:
+                        self._output_file.write("\tDevice: {0}\r\n".format(paired_device))
+        except KeyError:
+            pass
+        self._output_file.write("\r\n")
+
+class Parse05():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "BluetoothAutoSeekHIDDevices" in self._data_file:
+                self._output_file.write("Bluetooth Auto Seek HID Devices: {0}\r\n".format(self._data_file["BluetoothAutoSeekHIDDevices"]))
+            if "ControllerPowerState" in self._data_file:
+                self._output_file.write("Controller Power State         : {0}\r\n".format(self._data_file["ControllerPowerState"]))
+            if "BluetoothVersionNumber" in self._data_file:
+                self._output_file.write("Bluetooth Version Number       : {0}\r\n".format(self._data_file["BluetoothVersionNumber"]))
+            if "DaemonControllersConfigurationKey" in self._data_file:
+                self._output_file.write("Daemon Controllers Configuration Key:\r\n")
+                for dmcck_key in self._data_file["DaemonControllersConfigurationKey"]:
+                    self._output_file.write("\t{0}\r\n".format(dmcck_key))
+                    for item in self._data_file["DaemonControllersConfigurationKey"][dmcck_key]:
+                        self._output_file.write("\t\t{0}: {1}\r\n".format(item, self._data_file["DaemonControllersConfigurationKey"][dmcck_key][item]))
+            if "HIDDevices" in self._data_file:
+                hid_array = self._data_file["PairedDevices"]
+                self._output_file.write("HID Devices: {0}\r\n")
+                for hid_device in hid_array:
+                    self._output_file.write("\t{0}\r\n".format(hid_device))
+            if "DeviceCache" in self._data_file:
+                self._output_file.write("Device Cache\r\n")
+                for cached_device in self._data_file["DeviceCache"]:
+                    self._output_file.write("\tCached Device: {0}\r\n".format(cached_device))
+                    for device_data in self._data_file["DeviceCache"][cached_device]:
+                        if "Name" in device_data:
+                            self._output_file.write("\t\tName: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Name"]))
+                        if "Manufacturer" in device_data:
+                            self._output_file.write("\t\tManufacturer: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["Manufacturer"]))
+                        if "ClassOfDevice" in device_data:
+                            self._output_file.write("\t\tClass Of Device: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClassOfDevice"]))
+                        if "BatteryPercent" in device_data:
+                            self._output_file.write("\t\tBattery Percent: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["BatteryPercent"]))
+                        if "ClockOffset" in device_data:
+                            self._output_file.write("\t\tClock Offset: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["ClockOffset"]))
+                        if "LastNameUpdate" in device_data:
+                            self._output_file.write("\t\tLast Name Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastNameUpdate"]))
+                        if "LastServicesUpdate" in device_data:
+                            self._output_file.write("\t\tLast Services Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastServicesUpdate"]))
+                        if "LastInquiryUpdate" in device_data:
+                            self._output_file.write("\t\tLast Inquiry Update: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LastInquiryUpdate"]))
+                        if "LMPVersion" in device_data:
+                            self._output_file.write("\t\tLMP Version: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPVersion"]))
+                        if "LMPSubversion" in device_data:
+                            self._output_file.write("\t\tLMP Subversion: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["LMPSubversion"]))
+                        if "InquiryRSSI" in device_data:
+                            self._output_file.write("\t\tInquiry RSSI: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["InquiryRSSI"]))
+                        if "PageScanMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanMode"]))
+                        if "PageScanPeriod" in device_data:
+                            self._output_file.write("\t\tPage Scan Period: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanPeriod"]))
+                        if "PageScanRepetitionMode" in device_data:
+                            self._output_file.write("\t\tPage Scan Repetition Mode: {0}\r\n".format(self._data_file["DeviceCache"][cached_device]["PageScanRepetitionMode"]))
+            if "PairedDevices" in self._data_file:
+                paired_array = self._data_file["PairedDevices"]
+                self._output_file.write("Paired Devices:\r\n")
+                for paired_device in paired_array:
+                    self._output_file.write("\t{0}\r\n".format(paired_device))
+        except KeyError:
+            pass
+        self._output_file.write("\r\n")
