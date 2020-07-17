@@ -1,3 +1,4 @@
+""" Module for the quick summary plugin """
 from riplib.Plugin import Plugin
 
 import plugins.osx.SmbServer as SmbServer
@@ -26,7 +27,7 @@ class Summary(Plugin):
         super().__init__()
         self._name = "Summary"
         self._description = "Parse data for system summary"
-        self._output_file = "OSXRipper_Summary.txt"
+        self.output_file = "OSXRipper_Summary.txt"
         self._type = "multiple"
 
     def parse(self):
