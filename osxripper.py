@@ -5,7 +5,7 @@ import importlib
 import logging
 import os
 import sys
-from plugins.OSXVersion import OSXVersion
+from plugins.osx_version import OSXVersion
 from plugins.Summary import Summary
 
 __author__ = 'osxripper'
@@ -45,7 +45,7 @@ def __get_osx_version():
     """
     Get the version of OSX
     """
-    use_version = "catalina"  # Default
+    use_version = "big_sur"  # Default
     osx_version = OSXVersion()
     osx_version.set_input_directory(args.input)
     use_version = osx_version.parse()

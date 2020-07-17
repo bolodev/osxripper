@@ -65,11 +65,11 @@ class Plugin(object):
         """
         self._os_version = osx_version
 
-    def parse(self):
-        """
-        Public function called to parse the data file set in __init__, override as necessary
-        """
-        pass
+    # def parse(self):
+    #     """
+    #     Public function called to parse the data file set in __init__, override as necessary
+    #     """
+    #     pass
 
     @staticmethod
     def pprint(data):
