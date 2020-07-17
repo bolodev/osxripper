@@ -1,8 +1,9 @@
-from riplib.plugin import Plugin
+""" Moduule to parse Airport data """
 import codecs
 import logging
 import os
 import plistlib
+from riplib.plugin import Plugin
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -19,320 +20,334 @@ class AirportPreferences(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Airport Preferences"
-        self._description = "Parse data from com.apple.airport.preferences.plist"
-        self._data_file = "com.apple.airport.preferences.plist"
-        self._output_file = "Networking.txt"
-        self._type = "plist"
-    
+        self.set_name("Airport Preferences")
+        self.set_description("Parse data from com.apple.airport.preferences.plist")
+        self.set_data_file("com.apple.airport.preferences.plist")
+        self.set_output_file("Networking.txt")
+        self.set_type("plist")
+
     def parse(self):
         """
         Parse /Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-            plist_file = os.path.join(self._input_dir, "Library", "Preferences", "SystemConfiguration", self._data_file)
-            of.write("Source File: {0}\r\n\r\n".format(plist_file))
+        with codecs.open(os.path.join(self.get_output_dir, self.get_output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self.get_name + " " + "="*10 + "\r\n")
+            plist_file = os.path.join(self.get_input_dir, "Library", "Preferences", "SystemConfiguration", self.get_data_file)
+            output_file.write("Source File: {0}\r\n\r\n".format(plist_file))
+            if os.path.isfile(plist_file):
+                with open(plist_file, "rb") as plist_to_load:
+                    plist = plistlib.load(plist_to_load)
+                plist_to_load.close()
+            else:
+                logging.warning("File: %s does not exist or cannot be found.", plist_file)
+                output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
+                print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
+
             # if self._os_version in ["big_sur", "catalina"]:
             if self._os_version in ["catalina"]:
-                if os.path.isfile(plist_file):
-                    with open(plist_file, "rb") as pl:
-                        plist = plistlib.load(pl)
-                    try:
-                        if "Counter" in plist:
-                            of.write("Counter                  : {0}\r\n".format(plist["Counter"]))
-                        if "DeviceUUID" in plist:
-                            of.write("Device UUID:             : {}\r\n".format(plist["DeviceUUID"]))
-                        if "KnownNetworks" in plist:
-                            known_networks = plist["KnownNetworks"]
-                            for network_key in known_networks:
-                                of.write("Known Network            : {0}\r\n".format(network_key))
-                                of.write("\tAdded By             : {0}\r\n".format(known_networks[network_key]["AddedBy"]))
-                                of.write("\tLEAKY AP BSSID       : {0}\r\n".format(
-                                    known_networks[network_key]["BSSIDList"][0]))
-                                of.write("\tLEAKY AP BSSID       : {0}\r\n".format(
-                                    known_networks[network_key]["BSSIDList"][1]))
-                                of.write("\tCaptive Bypass       : {0}\r\n".format(
-                                    known_networks[network_key]["CaptiveBypass"]))
-                                channel_history = known_networks[network_key]["ChannelHistory"]
-                                of.write("\tChannel History")
-                                for channel in channel_history:
-                                    if "Timestamp" in channel:
-                                        of.write("\t\tTimestamp   : {0}\r\n".format(channel["Timestamp"]))
-                                    if "Channel" in channel:
-                                        of.write("\t\tChannel     : {0}\r\n".format(channel["Channel"]))
-
-                                if "Closed" in known_networks[network_key]:
-                                    of.write("\tClosed               : {0}\r\n".format(known_networks[network_key]["Closed"]))
-                                of.write("\tDisabled             : {0}\r\n".format(known_networks[network_key]["Disabled"]))
-                                if "LastConnected" in known_networks[network_key]:
-                                    of.write("\tLast Connected  : {0}\r\n".format(
-                                        known_networks[network_key]["LastConnected"]))
-                                if "HiddenNetwork" in known_networks[network_key]:
-                                    of.write("\tHidden Network       : {0}\r\n".format(
-                                        known_networks[network_key]["HiddenNetwork"]))
-                                if "LastAutoJoinAt" in known_networks[network_key]:
-                                    of.write("\tLast Auto Join At    : {0}\r\n".format(
-                                        known_networks[network_key]["LastAutoJoinAt"]))
-                                of.write("\tNetwork Was Captive  : {0}\r\n".format(
-                                    known_networks[network_key]["NetworkWasCaptive"]))
-                                of.write("\tPasspoint            : {0}\r\n".format(known_networks[network_key]["Passpoint"]))
-                                of.write("\tPersonal Hotspot     : {0}\r\n".format(
-                                    known_networks[network_key]["PersonalHotspot"]))
-                                of.write("\tPossibly Hidden Network : {0}\r\n".format(
-                                    known_networks[network_key]["PossiblyHiddenNetwork"]))
-                                of.write("\tRoaming Profile Type : {0}\r\n".format(
-                                    known_networks[network_key]["RoamingProfileType"]))
-                                of.write("\tSP Roaming           : {0}\r\n".format(known_networks[network_key]["SPRoaming"]))
-                                of.write("\tSSID                 : {0}\r\n".format(known_networks[network_key]["SSID"]))
-                                of.write(
-                                    "\tSSID String          : {0}\r\n".format(known_networks[network_key]["SSIDString"]))
-                                of.write("\tSecurity Type        : {0}\r\n".format(
-                                    known_networks[network_key]["SecurityType"]))
-                                of.write("\tShare Mode           : {0}\r\n".format(known_networks[network_key]["ShareMode"]))
-                                of.write(
-                                    "\tSystem Mode          : {0}\r\n".format(known_networks[network_key]["SystemMode"]))
-                                of.write("\tTemporarily Disabled : {0}\r\n".format(
-                                    known_networks[network_key]["TemporarilyDisabled"]))
-                                of.write("\tUser Role            : {0}\r\n".format(known_networks[network_key]["UserRole"]))
-                        if "PreferredOrder" in plist:
-                            of.write("Preferred Order\r\n")
-                            orders = plist["PreferredOrder"]
-                            for order in orders:
-                                of.write("\t{0}\r\n".format(order))
-                        # TODO parse UpdateHistory
-                        # if "UpdateHistory" in plist:
-                        #     of.write("Update History\r\n")
-                        #     updates = plist["UpdateHistory"]
-                        #     for update in updates:
-                        #         if "Previous" in update:
-                        #             if len(update["Previous"]) == 0:
-                        #                 of.write("\tNo data in Previous.\r\n")
-                        #             else:
-                        #                 of.write("\tPrevious: {0}\r\n".format(update["Previous"]))
-                        #         if "Timestamp" in update:
-                        #             of.write("\tTimestamp: {0}\r\n".format(update["Timestamp"]))
-
-                        if "Version" in plist:
-                            of.write("Version: {0}\r\n".format(plist["Version"]))
-                            # print("Version: {0}\r\n".format(plist["Version"]))
-                    except KeyError:
-                        pass
-                else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(plist_file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
+                parse_macos = Parse01(output_file, plist)
+                parse_macos.parse()
             elif self._os_version in ["mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-                if os.path.isfile(plist_file):
-                    with open(plist_file, "rb") as pl:
-                        plist = plistlib.load(pl)
-                    try:
-                        if "Counter" in plist:
-                            of.write("Counter                  : {0}\r\n".format(plist["Counter"]))
-                        if "KnownNetworks" in plist:
-                            known_networks = plist["KnownNetworks"]
-                            for network_key in known_networks:
-                                of.write("Network Key              : {0}\r\n".format(network_key))
-                                of.write("\tAuto Login             : {0}\r\n"
-                                         .format(known_networks[network_key]["AutoLogin"]))
-                                of.write("\tCaptive                : {0}\r\n"
-                                         .format(known_networks[network_key]["Captive"]))
-                                of.write("\tClosed                 : {0}\r\n"
-                                         .format(known_networks[network_key]["Closed"]))
-                                of.write("\tDisabled               : {0}\r\n"
-                                         .format(known_networks[network_key]["Disabled"]))
-                                of.write("\tLast Connected         : {0}\r\n"
-                                         .format(known_networks[network_key]["LastConnected"]))
-                                of.write("\tPasspoint              : {0}\r\n"
-                                         .format(known_networks[network_key]["Passpoint"]))
-                                of.write("\tPossibly Hidden Network: {0}\r\n"
-                                         .format(known_networks[network_key]["PossiblyHiddenNetwork"]))
-                                of.write("\tRoaming Profile Type   : {0}\r\n"
-                                         .format(known_networks[network_key]["RoamingProfileType"]))
-                                of.write("\tSP Roaming             : {0}\r\n"
-                                         .format(known_networks[network_key]["SPRoaming"]))
-                                of.write("\tSSID                   : {0}\r\n"
-                                         .format(known_networks[network_key]["SSID"]))
-                                of.write("\tSSID String            : {0}\r\n"
-                                         .format(known_networks[network_key]["SSIDString"]))
-                                of.write("\tSecurity Type          : {0}\r\n"
-                                         .format(known_networks[network_key]["SecurityType"]))
-                                of.write("\tSystem Mode            : {0}\r\n"
-                                         .format(known_networks[network_key]["SystemMode"]))
-                                of.write("\tTemporarily Disabled   : {0}\r\n"
-                                         .format(known_networks[network_key]["TemporarilyDisabled"]))
-                                
-                                channel_history = known_networks[network_key]["ChannelHistory"]
-                                of.write("\tChannel History\r\n")
-                                for channel in channel_history:
-                                    if "Timestamp" in channel:
-                                        of.write("\t\tTimestamp   : {0}\r\n".format(channel["Timestamp"]))
-                                    if "Channel" in channel:
-                                        of.write("\t\tChannel   : {0}\r\n".format(channel["Channel"]))
-
-                        if "PreferredOrder" in plist:
-                            of.write("Preferred Order\r\n")
-                            orders = plist["PreferredOrder"]
-                            for order in orders:
-                                of.write("\t{0}\r\n".format(order))
-                                
-                        if "UpdateHistory" in plist:
-                            of.write("Update History\r\n")
-                            updates = plist["UpdateHistory"]
-                            for update in updates:
-                                if "Previous" in update:
-                                    if len(update["Previous"]) == 0:
-                                        of.write("\tNo data in Previous.\r\n")
-                                    else:
-                                        of.write("\tPrevious: {0}\r\n".format(update["Previous"]))
-                                if "Timestamp" in update:
-                                    of.write("\tTimestamp: {0}\r\n".format(update["Timestamp"]))
-                                    
-                        if "Version" in plist:
-                            of.write("Version: {0}\r\n".format(plist["Version"]))
-                    except KeyError:
-                        pass
-                else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(plist_file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
-            
+                parse_macos = Parse02(output_file, plist)
+                parse_macos.parse()
             elif self._os_version == "mavericks":
-                if os.path.isfile(plist_file):
-                    with open(plist_file, "rb") as pl:
-                        plist = plistlib.load(pl)
-                    try:
-                        of.write("Remembered Networks\r\n\r\n")
-                        for remembered in plist["RememberedNetworks"]:
-                            if "AutoLogin" in remembered:
-                                of.write("\tAuto Login: {0}\r\n".format(remembered["AutoLogin"]))
-                            if "Captive" in remembered:
-                                of.write("\tCaptive: {0}\r\n".format(remembered["Captive"]))
-                            if "Closed" in remembered:
-                                of.write("\tClosed: {0}\r\n".format(remembered["Closed"]))
-                            if "Disabled" in remembered:
-                                of.write("\tDisabled: {0}\r\n".format(remembered["Disabled"]))
-                            if "LastConnected" in remembered:
-                                of.write("\tLast Connected: {0}\r\n".format(remembered["LastConnected"]))
-                            if "Passpoint" in remembered:
-                                of.write("\tPasspoint: {0}\r\n".format(remembered["Passpoint"]))
-                            if "PossiblyHiddenNetwork" in remembered:
-                                of.write("\tPossibly Hidden Network: {0}\r\n"
-                                         .format(remembered["PossiblyHiddenNetwork"]))
-                            if "SPRoaming" in remembered:
-                                of.write("\tSPRoaming: {0}\r\n".format(remembered["SPRoaming"]))
-                            if "SSID" in remembered:
-                                of.write("\tSSID: {0}\r\n".format(remembered["SSID"]))
-                            if "SSIDString" in remembered:
-                                of.write("\tSSID String: {0}\r\n".format(remembered["SSIDString"]))
-                            if "SecurityType" in remembered:
-                                of.write("\tSecurity Type: {0}\r\n".format(remembered["SecurityType"]))
-                            if "SystemMode" in remembered:
-                                of.write("\tSystem Mode: {0}\r\n".format(remembered["SystemMode"]))
-                            if "TemporarilyDisabled" in remembered:
-                                of.write("\tTemporarily Disabled: {0}\r\n".format(remembered["TemporarilyDisabled"]))
-                            of.write("\r\n")
-                            
-                        if "Version" in plist:
-                            of.write("Version: {0}\r\n".format(plist["Version"]))
-                        of.write("\r\n")
-                    except KeyError:
-                        pass
-                        
-                else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(plist_file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
+                parse_macos = Parse03(output_file, plist)
+                parse_macos.parse()
             elif self._os_version in ["mountain_lion", "lion"]:
-                if os.path.isfile(plist_file):
-                    with open(plist_file, "rb") as pl:
-                        plist = plistlib.load(pl)
-                    try:
-                        of.write("Remembered Networks\r\n\r\n")
-                        remembered = None
-                        for remembered in plist["RememberedNetworks"]:
-                            if "AutoLogin" in remembered:
-                                of.write("\tAuto Login: {0}\r\n".format(remembered["AutoLogin"]))
-                            if "CachedScanRecord" in remembered:
-                                of.write("\tCached Scan Record\r\n")
-                                of.write("\t\tChannel: {0}\r\n".format(remembered["CachedScanRecord"]["BSSID"]))
-                                of.write("\t\tChannel: {0}\r\n".format(remembered["CachedScanRecord"]["CHANNEL"]))
-                                of.write("\t\tSSID: {0}\r\n".format(remembered["CachedScanRecord"]["SSID"]))
-                                of.write("\t\tSSID String: {0}\r\n".format(remembered["CachedScanRecord"]["SSID_STR"]))
-                        if "Captive" in remembered:
-                            of.write("\tCaptive: {0}\r\n".format(remembered["Captive"]))
-                        if "Closed" in remembered:
-                            of.write("\tClosed: {0}\r\n".format(remembered["Closed"]))
-                        if "Disabled" in remembered:
-                            of.write("\tDisabled: {0}\r\n".format(remembered["Disabled"]))
-                        if "LastConnected" in remembered:
-                            of.write("\tLast Connected: {0}\r\n".format(remembered["LastConnected"]))
-                        if "SSID" in remembered:
-                            of.write("\tSSID: {0}\r\n".format(remembered["SSID"]))
-                        if "SSIDString" in remembered:
-                            of.write("\tSSID String: {0}\r\n".format(remembered["SSIDString"]))
-                        if "SecurityType" in remembered:
-                            of.write("\tSecurity Type: {0}\r\n".format(remembered["SecurityType"]))
-                        if "SystemMode" in remembered:
-                            of.write("\tSystem Mode: {0}\r\n".format(remembered["SystemMode"]))
-                        if "TemporarilyDisabled" in remembered:
-                            of.write("\tTemporarily Disabled: {0}\r\n".format(remembered["TemporarilyDisabled"]))
-                        of.write("\r\n")
-                        if "Version" in plist:
-                            of.write("Version: {0}\r\n".format(plist["Version"]))
-                        of.write("\r\n")
-                    except KeyError:
-                            pass
-                else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(plist_file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
-                    print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
+                parse_macos = Parse04(output_file, plist)
+                parse_macos.parse()
             elif self._os_version == "snow_leopard":
-                if os.path.isfile(plist_file):
-                    with open(plist_file, "rb") as pl:
-                        plist = plistlib.load(pl)
-                    try:
-                        if "KnownNetworks" in plist:
-                            for known_network in plist["KnownNetworks"]:
-                                of.write("Known Network: {0}\r\n".format(known_network))
-                                for channel in plist["KnownNetworks"][known_network]["Remembered channels"]:
-                                    of.write("\tChannel           : {0}\r\n".format(channel))
-                                of.write("\tSSID              : {0}\r\n"
-                                         .format(plist["KnownNetworks"][known_network]["SSID_STR"]))
-                                of.write("\tSecurity Type     : {0}\r\n"
-                                         .format(plist["KnownNetworks"][known_network]["SecurityType"]))
-                                if "Unique Password ID" in plist["KnownNetworks"][known_network]:
-                                    of.write("\tUnique Password ID: {0}\r\n"
-                                             .format(plist["KnownNetworks"][known_network]["Unique Password ID"]))
-                                of.write("\tTimestamp         : {0}\r\n"
-                                         .format(plist["KnownNetworks"][known_network]["_timeStamp"]))
-                                of.write("\r\n")
-
-                        if "en1" in plist:
-                            of.write("en1\r\n")
-                            if "RecentNetworks" in plist["en1"]:
-                                recent_networks = plist["en1"]["RecentNetworks"]
-                                of.write("Recent Networks:\r\n\r\n")
-                                for recent_network in recent_networks:
-                                    if "SSID_STR" in recent_network:
-                                        of.write("\tSSID              : {0}\r\n"
-                                                 .format(recent_network["SSID_STR"]))
-                                    if "SecurityType" in recent_network:
-                                        of.write("\tSecurity Type     : {0}\r\n"
-                                                 .format(recent_network["SecurityType"]))
-                                    if "Unique Network ID" in recent_network:
-                                        of.write("\tUnique Network ID : {0}\r\n"
-                                                 .format(recent_network["Unique Network ID"]))
-                                    if "Unique Password ID" in recent_network:
-                                        of.write("\tUnique Password ID: {0}\r\n"
-                                                 .format(recent_network["Unique Password ID"]))
-                                    of.write("\r\n")
-                            else:
-                                of.write("\tNo Recent Networks\r\n")
-                    except KeyError:
-                        pass
+                parse_macos = Parse05(output_file, plist)
+                parse_macos.parse()
             else:
                 logging.warning("[WARNING] Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
+
+class Parse01():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "Counter" in self._data_file:
+                self._output_file.write("Counter                  : {0}\r\n".format(self._data_file["Counter"]))
+            if "DeviceUUID" in self._data_file:
+                self._output_file.write("Device UUID:             : {}\r\n".format(self._data_file["DeviceUUID"]))
+            if "KnownNetworks" in self._data_file:
+                known_networks = self._data_file["KnownNetworks"]
+                for network_key in known_networks:
+                    self._output_file.write("Known Network            : {0}\r\n".format(network_key))
+                    self._output_file.write("\tAdded By             : {0}\r\n".format(known_networks[network_key]["AddedBy"]))
+                    self._output_file.write("\tLEAKY AP BSSID       : {0}\r\n".format(known_networks[network_key]["BSSIDList"][0]))
+                    self._output_file.write("\tLEAKY AP BSSID       : {0}\r\n".format(known_networks[network_key]["BSSIDList"][1]))
+                    self._output_file.write("\tCaptive Bypass       : {0}\r\n".format(known_networks[network_key]["CaptiveBypass"]))
+                    channel_history = known_networks[network_key]["ChannelHistory"]
+                    self._output_file.write("\tChannel History")
+                    for channel in channel_history:
+                        if "Timestamp" in channel:
+                            self._output_file.write("\t\tTimestamp   : {0}\r\n".format(channel["Timestamp"]))
+                        if "Channel" in channel:
+                            self._output_file.write("\t\tChannel     : {0}\r\n".format(channel["Channel"]))
+
+                    if "Closed" in known_networks[network_key]:
+                        self._output_file.write("\tClosed               : {0}\r\n".format(known_networks[network_key]["Closed"]))
+                    self._output_file.write("\tDisabled             : {0}\r\n".format(known_networks[network_key]["Disabled"]))
+                    if "LastConnected" in known_networks[network_key]:
+                        self._output_file.write("\tLast Connected  : {0}\r\n".format(known_networks[network_key]["LastConnected"]))
+                    if "HiddenNetwork" in known_networks[network_key]:
+                        self._output_file.write("\tHidden Network       : {0}\r\n".format(known_networks[network_key]["HiddenNetwork"]))
+                    if "LastAutoJoinAt" in known_networks[network_key]:
+                        self._output_file.write("\tLast Auto Join At    : {0}\r\n".format(known_networks[network_key]["LastAutoJoinAt"]))
+                    self._output_file.write("\tNetwork Was Captive  : {0}\r\n".format(known_networks[network_key]["NetworkWasCaptive"]))
+                    self._output_file.write("\tPasspoint            : {0}\r\n".format(known_networks[network_key]["Passpoint"]))
+                    self._output_file.write("\tPersonal Hotspot     : {0}\r\n".format(known_networks[network_key]["PersonalHotspot"]))
+                    self._output_file.write("\tPossibly Hidden Network : {0}\r\n".format(known_networks[network_key]["PossiblyHiddenNetwork"]))
+                    self._output_file.write("\tRoaming Profile Type : {0}\r\n".format(known_networks[network_key]["RoamingProfileType"]))
+                    self._output_file.write("\tSP Roaming           : {0}\r\n".format(known_networks[network_key]["SPRoaming"]))
+                    self._output_file.write("\tSSID                 : {0}\r\n".format(known_networks[network_key]["SSID"]))
+                    self._output_file.write("\tSSID String          : {0}\r\n".format(known_networks[network_key]["SSIDString"]))
+                    self._output_file.write("\tSecurity Type        : {0}\r\n".format(known_networks[network_key]["SecurityType"]))
+                    self._output_file.write("\tShare Mode           : {0}\r\n".format(known_networks[network_key]["ShareMode"]))
+                    self._output_file.write("\tSystem Mode          : {0}\r\n".format(known_networks[network_key]["SystemMode"]))
+                    self._output_file.write("\tTemporarily Disabled : {0}\r\n".format(known_networks[network_key]["TemporarilyDisabled"]))
+                    self._output_file.write("\tUser Role            : {0}\r\n".format(known_networks[network_key]["UserRole"]))
+            if "PreferredOrder" in self._data_file:
+                self._output_file.write("Preferred Order\r\n")
+                orders = self._data_file["PreferredOrder"]
+                for order in orders:
+                    self._output_file.write("\t{0}\r\n".format(order))
+            # Parse UpdateHistory
+            # if "UpdateHistory" in plist:
+            #     self._output_file.write("Update History\r\n")
+            #     updates = plist["UpdateHistory"]
+            #     for update in updates:
+            #         if "Previous" in update:
+            #             if len(update["Previous"]) == 0:
+            #                 self._output_file.write("\tNo data in Previous.\r\n")
+            #             else:
+            #                 self._output_file.write("\tPrevious: {0}\r\n".format(update["Previous"]))
+            #         if "Timestamp" in update:
+            #             self._output_file.write("\tTimestamp: {0}\r\n".format(update["Timestamp"]))
+
+            if "Version" in self._data_file:
+                self._output_file.write("Version: {0}\r\n".format(self._data_file["Version"]))
+        except KeyError:
+            pass
+
+class Parse02():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "Counter" in self._data_file:
+                self._output_file.write("Counter                  : {0}\r\n".format(self._data_file["Counter"]))
+            if "KnownNetworks" in self._data_file:
+                known_networks = self._data_file["KnownNetworks"]
+                for network_key in known_networks:
+                    self._output_file.write("Network Key              : {0}\r\n".format(network_key))
+                    self._output_file.write("\tAuto Login             : {0}\r\n".format(known_networks[network_key]["AutoLogin"]))
+                    self._output_file.write("\tCaptive                : {0}\r\n".format(known_networks[network_key]["Captive"]))
+                    self._output_file.write("\tClosed                 : {0}\r\n".format(known_networks[network_key]["Closed"]))
+                    self._output_file.write("\tDisabled               : {0}\r\n".format(known_networks[network_key]["Disabled"]))
+                    self._output_file.write("\tLast Connected         : {0}\r\n".format(known_networks[network_key]["LastConnected"]))
+                    self._output_file.write("\tPasspoint              : {0}\r\n".format(known_networks[network_key]["Passpoint"]))
+                    self._output_file.write("\tPossibly Hidden Network: {0}\r\n".format(known_networks[network_key]["PossiblyHiddenNetwork"]))
+                    self._output_file.write("\tRoaming Profile Type   : {0}\r\n".format(known_networks[network_key]["RoamingProfileType"]))
+                    self._output_file.write("\tSP Roaming             : {0}\r\n".format(known_networks[network_key]["SPRoaming"]))
+                    self._output_file.write("\tSSID                   : {0}\r\n".format(known_networks[network_key]["SSID"]))
+                    self._output_file.write("\tSSID String            : {0}\r\n".format(known_networks[network_key]["SSIDString"]))
+                    self._output_file.write("\tSecurity Type          : {0}\r\n".format(known_networks[network_key]["SecurityType"]))
+                    self._output_file.write("\tSystem Mode            : {0}\r\n".format(known_networks[network_key]["SystemMode"]))
+                    self._output_file.write("\tTemporarily Disabled   : {0}\r\n".format(known_networks[network_key]["TemporarilyDisabled"]))
+
+                    channel_history = known_networks[network_key]["ChannelHistory"]
+                    self._output_file.write("\tChannel History\r\n")
+                    for channel in channel_history:
+                        if "Timestamp" in channel:
+                            self._output_file.write("\t\tTimestamp   : {0}\r\n".format(channel["Timestamp"]))
+                        if "Channel" in channel:
+                            self._output_file.write("\t\tChannel   : {0}\r\n".format(channel["Channel"]))
+
+            if "PreferredOrder" in self._data_file:
+                self._output_file.write("Preferred Order\r\n")
+                orders = self._data_file["PreferredOrder"]
+                for order in orders:
+                    self._output_file.write("\t{0}\r\n".format(order))
+
+            if "UpdateHistory" in self._data_file:
+                self._output_file.write("Update History\r\n")
+                updates = self._data_file["UpdateHistory"]
+                for update in updates:
+                    if "Previous" in update:
+                        if len(update["Previous"]) == 0:
+                            self._output_file.write("\tNo data in Previous.\r\n")
+                        else:
+                            self._output_file.write("\tPrevious: {0}\r\n".format(update["Previous"]))
+                    if "Timestamp" in update:
+                        self._output_file.write("\tTimestamp: {0}\r\n".format(update["Timestamp"]))
+
+            if "Version" in self._data_file:
+                self._output_file.write("Version: {0}\r\n".format(self._data_file["Version"]))
+        except KeyError:
+            pass
+
+class Parse03():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            self._output_file.write("Remembered Networks\r\n\r\n")
+            for remembered in self._data_file["RememberedNetworks"]:
+                if "AutoLogin" in remembered:
+                    self._output_file.write("\tAuto Login: {0}\r\n".format(remembered["AutoLogin"]))
+                if "Captive" in remembered:
+                    self._output_file.write("\tCaptive: {0}\r\n".format(remembered["Captive"]))
+                if "Closed" in remembered:
+                    self._output_file.write("\tClosed: {0}\r\n".format(remembered["Closed"]))
+                if "Disabled" in remembered:
+                    self._output_file.write("\tDisabled: {0}\r\n".format(remembered["Disabled"]))
+                if "LastConnected" in remembered:
+                    self._output_file.write("\tLast Connected: {0}\r\n".format(remembered["LastConnected"]))
+                if "Passpoint" in remembered:
+                    self._output_file.write("\tPasspoint: {0}\r\n".format(remembered["Passpoint"]))
+                if "PossiblyHiddenNetwork" in remembered:
+                    self._output_file.write("\tPossibly Hidden Network: {0}\r\n".format(remembered["PossiblyHiddenNetwork"]))
+                if "SPRoaming" in remembered:
+                    self._output_file.write("\tSPRoaming: {0}\r\n".format(remembered["SPRoaming"]))
+                if "SSID" in remembered:
+                    self._output_file.write("\tSSID: {0}\r\n".format(remembered["SSID"]))
+                if "SSIDString" in remembered:
+                    self._output_file.write("\tSSID String: {0}\r\n".format(remembered["SSIDString"]))
+                if "SecurityType" in remembered:
+                    self._output_file.write("\tSecurity Type: {0}\r\n".format(remembered["SecurityType"]))
+                if "SystemMode" in remembered:
+                    self._output_file.write("\tSystem Mode: {0}\r\n".format(remembered["SystemMode"]))
+                if "TemporarilyDisabled" in remembered:
+                    self._output_file.write("\tTemporarily Disabled: {0}\r\n".format(remembered["TemporarilyDisabled"]))
+                self._output_file.write("\r\n")
+
+            if "Version" in self._data_file:
+                self._output_file.write("Version: {0}\r\n".format(self._data_file["Version"]))
+            self._output_file.write("\r\n")
+        except KeyError:
+            pass
+
+class Parse04():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            self._output_file.write("Remembered Networks\r\n\r\n")
+            remembered = None
+            for remembered in self._data_file["RememberedNetworks"]:
+                if "AutoLogin" in remembered:
+                    self._output_file.write("\tAuto Login: {0}\r\n".format(remembered["AutoLogin"]))
+                if "CachedScanRecord" in remembered:
+                    self._output_file.write("\tCached Scan Record\r\n")
+                    self._output_file.write("\t\tChannel: {0}\r\n".format(remembered["CachedScanRecord"]["BSSID"]))
+                    self._output_file.write("\t\tChannel: {0}\r\n".format(remembered["CachedScanRecord"]["CHANNEL"]))
+                    self._output_file.write("\t\tSSID: {0}\r\n".format(remembered["CachedScanRecord"]["SSID"]))
+                    self._output_file.write("\t\tSSID String: {0}\r\n".format(remembered["CachedScanRecord"]["SSID_STR"]))
+            if "Captive" in remembered:
+                self._output_file.write("\tCaptive: {0}\r\n".format(remembered["Captive"]))
+            if "Closed" in remembered:
+                self._output_file.write("\tClosed: {0}\r\n".format(remembered["Closed"]))
+            if "Disabled" in remembered:
+                self._output_file.write("\tDisabled: {0}\r\n".format(remembered["Disabled"]))
+            if "LastConnected" in remembered:
+                self._output_file.write("\tLast Connected: {0}\r\n".format(remembered["LastConnected"]))
+            if "SSID" in remembered:
+                self._output_file.write("\tSSID: {0}\r\n".format(remembered["SSID"]))
+            if "SSIDString" in remembered:
+                self._output_file.write("\tSSID String: {0}\r\n".format(remembered["SSIDString"]))
+            if "SecurityType" in remembered:
+                self._output_file.write("\tSecurity Type: {0}\r\n".format(remembered["SecurityType"]))
+            if "SystemMode" in remembered:
+                self._output_file.write("\tSystem Mode: {0}\r\n".format(remembered["SystemMode"]))
+            if "TemporarilyDisabled" in remembered:
+                self._output_file.write("\tTemporarily Disabled: {0}\r\n".format(remembered["TemporarilyDisabled"]))
+            self._output_file.write("\r\n")
+            if "Version" in self._data_file:
+                self._output_file.write("Version: {0}\r\n".format(self._data_file["Version"]))
+            self._output_file.write("\r\n")
+        except KeyError:
+            pass
+
+class Parse05():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        try:
+            if "KnownNetworks" in self._data_file:
+                for known_network in self._data_file["KnownNetworks"]:
+                    self._output_file.write("Known Network: {0}\r\n".format(known_network))
+                    for channel in self._data_file["KnownNetworks"][known_network]["Remembered channels"]:
+                        self._output_file.write("\tChannel           : {0}\r\n".format(channel))
+                    self._output_file.write("\tSSID              : {0}\r\n".format(self._data_file["KnownNetworks"][known_network]["SSID_STR"]))
+                    self._output_file.write("\tSecurity Type     : {0}\r\n".format(self._data_file["KnownNetworks"][known_network]["SecurityType"]))
+                    if "Unique Password ID" in self._data_file["KnownNetworks"][known_network]:
+                        self._output_file.write("\tUnique Password ID: {0}\r\n"
+                                                .format(self._data_file["KnownNetworks"][known_network]["Unique Password ID"]))
+                    self._output_file.write("\tTimestamp         : {0}\r\n".format(self._data_file["KnownNetworks"][known_network]["_timeStamp"]))
+                    self._output_file.write("\r\n")
+
+            if "en1" in self._data_file:
+                self._output_file.write("en1\r\n")
+                if "RecentNetworks" in self._data_file["en1"]:
+                    recent_networks = self._data_file["en1"]["RecentNetworks"]
+                    self._output_file.write("Recent Networks:\r\n\r\n")
+                    for recent_network in recent_networks:
+                        if "SSID_STR" in recent_network:
+                            self._output_file.write("\tSSID              : {0}\r\n".format(recent_network["SSID_STR"]))
+                        if "SecurityType" in recent_network:
+                            self._output_file.write("\tSecurity Type     : {0}\r\n".format(recent_network["SecurityType"]))
+                        if "Unique Network ID" in recent_network:
+                            self._output_file.write("\tUnique Network ID : {0}\r\n".format(recent_network["Unique Network ID"]))
+                        if "Unique Password ID" in recent_network:
+                            self._output_file.write("\tUnique Password ID: {0}\r\n".format(recent_network["Unique Password ID"]))
+                        self._output_file.write("\r\n")
+                else:
+                    self._output_file.write("\tNo Recent Networks\r\n")
+        except KeyError:
+            pass
