@@ -1,9 +1,11 @@
-from riplib.plugin import Plugin
+""" Module to parse cache_encryptedA.db """
 import codecs
 import logging
 import os
-import riplib.osxripper_time
 import sqlite3
+import riplib.osxripper_time
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -20,11 +22,11 @@ class CacheEncryptedDatabase(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Wifi Locations - cache_encryptedA.db"
-        self._description = "Parse information from /private/var/folders/.../cache_encryptedA.db"
-        self._data_file = "cache_encryptedA.db"
-        self._output_file = "Wifi_Cache_Encrypted.txt"
-        self._type = "sqlite"
+        self.set_name("Wifi Locations - cache_encryptedA.db")
+        self.set_description("Parse information from /private/var/folders/.../cache_encryptedA.db")
+        self.set_data_file("cache_encryptedA.db")
+        self.set_output_file("Wifi_Cache_Encrypted.txt")
+        self.set_type("sqlite")
 
     def parse(self):
         """
@@ -32,104 +34,31 @@ class CacheEncryptedDatabase(Plugin):
         """
         with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
             of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-
             start_folder = os.path.join(self._input_dir, "private", "var", "folders")
             file_list = []
-            for root, subdirs, files in os.walk(start_folder):
+            for root, _, files in os.walk(start_folder):
                 if self._data_file in files:
                     file_list.append(os.path.join(root, self._data_file))
 
             if len(file_list) == 0:
-                logging.warning("File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
+                logging.warning("File: %s does not exist or cannot be found.\r\n", self._data_file)
                 of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(self._data_file))
                 return
+
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
-                query = "SELECT mac,channel,timestamp,latitude," \
-                        "longitude,horizontalaccuracy,altitude,verticalaccuracy,speed,course," \
-                        "confidence,score,reach FROM wifilocation ORDER BY timestamp, mac"
                 for database_file in file_list:
                     if os.path.isfile(database_file):
                         of.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        conn = None
-                        try:
-                            conn = sqlite3.connect(database_file)
-                            conn.row_factory = sqlite3.Row
-                            with conn:
-                                cur = conn.cursor()
-                                cur.execute(query)
-                                rows = cur.fetchall()
-                                if len(rows) > 0:
-                                    for row in rows:
-                                        timestamp = riplib.osxripper_time.get_cocoa_seconds(row["timestamp"])
-                                        of.write("MAC Address        : {0}\r\n".format(row["mac"]))
-                                        of.write("Channel            : {0}\r\n".format(row["channel"]))
-                                        of.write("Timestamp          : {0}\r\n".format(timestamp))
-                                        of.write("Latitude           : {0}\r\n".format(row["latitude"]))
-                                        of.write("Longitude          : {0}\r\n".format(row["longitude"]))
-                                        of.write("Horizontal Accuracy: {0}\r\n".format(row["horizontalaccuracy"]))
-                                        of.write("Altitude           : {0}\r\n".format(row["altitude"]))
-                                        of.write("Vertical Accuracy  : {0}\r\n".format(row["verticalaccuracy"]))
-                                        of.write("Speed              : {0}\r\n".format(row["speed"]))
-                                        of.write("Course             : {0}\r\n".format(row["course"]))
-                                        of.write("Confidence         : {0}\r\n".format(row["confidence"]))
-                                        of.write("Score              : {0}\r\n".format(row["score"]))
-                                        of.write("Reach              : {0}\r\n".format(row["reach"]))
-                                        of.write("\r\n")
-                                else:
-                                    of.write("No data in database.\r\n")
-                            of.write("\r\n")
-                        except sqlite3.Error as e:
-                            logging.error("{0}".format(e.args[0]))
-                            print("[ERROR] {0}".format(e.args[0]))
-                        finally:
-                            if conn:
-                                conn.close()
-                    of.write("="*50 + "\r\n")
+                        parse_macOS = Parse01(of, database_file)
+                        parse_macOS.parse()
 
             elif self._os_version == "mountain_lion":
-                query = "SELECT mac,channel,datetime(timestamp + 978307200, 'unixepoch'),latitude," \
-                        "longitude,horizontalaccuracy,altitude,verticalaccuracy,speed,course," \
-                        "confidence,score FROM wifilocation ORDER BY timestamp, mac"
-
                 for database_file in file_list:
                     if os.path.isfile(database_file):
                         of.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        conn = None
-                        try:
-                            conn = sqlite3.connect(database_file)
-                            conn.row_factory = sqlite3.Row
-                            with conn:
-                                cur = conn.cursor()
-                                cur.execute(query)
-                                rows = cur.fetchall()
-                                if len(rows) > 0:
-                                    for row in rows:
-                                        timestamp = riplib.osxripper_time.get_cocoa_seconds(row["timestamp"])
-                                        of.write("MAC Address        : {0}\r\n".format(row["mac"]))
-                                        of.write("Channel            : {0}\r\n".format(row["channel"]))
-                                        of.write("Timestamp          : {0}\r\n".format(timestamp))
-                                        of.write("Latitude           : {0}\r\n".format(row["latitude"]))
-                                        of.write("Longitude          : {0}\r\n".format(row["longitude"]))
-                                        of.write("Horizontal Accuracy: {0}\r\n".format(row["horizontalaccuracy"]))
-                                        of.write("Altitude           : {0}\r\n".format(row["altitude"]))
-                                        of.write("Vertical Accuracy  : {0}\r\n".format(row["verticalaccuracy"]))
-                                        of.write("Speed              : {0}\r\n".format(row["speed"]))
-                                        of.write("Course             : {0}\r\n".format(row["course"]))
-                                        of.write("Confidence         : {0}\r\n".format(row["confidence"]))
-                                        of.write("Score              : {0}\r\n".format(row["score"]))
-                                        of.write("\r\n")
-                                else:
-                                    of.write("No data in database.\r\n")
-                            of.write("\r\n")
-                        except sqlite3.Error as e:
-                            logging.error("{0}".format(e.args[0]))
-                            print("[ERROR] {0}".format(e.args[0]))
-                        finally:
-                            if conn:
-                                conn.close()
-                    of.write("="*50 + "\r\n")
+                        parse_macOS = Parse02(of, database_file)
 
             elif self._os_version in ["lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported this plugin.")
@@ -139,3 +68,105 @@ class CacheEncryptedDatabase(Plugin):
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
         of.close()
+
+class Parse01():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        query = "SELECT mac,channel,timestamp,latitude," \
+                "longitude,horizontalaccuracy,altitude,verticalaccuracy,speed,course," \
+                "confidence,score,reach FROM wifilocation ORDER BY timestamp, mac"
+
+        conn = None
+        try:
+            conn = sqlite3.connect(self._data_file)
+            conn.row_factory = sqlite3.Row
+            with conn:
+                cur = conn.cursor()
+                cur.execute(query)
+                rows = cur.fetchall()
+                if len(rows) > 0:
+                    for row in rows:
+                        timestamp = riplib.osxripper_time.get_cocoa_seconds(row["timestamp"])
+                        self._output_file.write("MAC Address        : {0}\r\n".format(row["mac"]))
+                        self._output_file.write("Channel            : {0}\r\n".format(row["channel"]))
+                        self._output_file.write("Timestamp          : {0}\r\n".format(timestamp))
+                        self._output_file.write("Latitude           : {0}\r\n".format(row["latitude"]))
+                        self._output_file.write("Longitude          : {0}\r\n".format(row["longitude"]))
+                        self._output_file.write("Horizontal Accuracy: {0}\r\n".format(row["horizontalaccuracy"]))
+                        self._output_file.write("Altitude           : {0}\r\n".format(row["altitude"]))
+                        self._output_file.write("Vertical Accuracy  : {0}\r\n".format(row["verticalaccuracy"]))
+                        self._output_file.write("Speed              : {0}\r\n".format(row["speed"]))
+                        self._output_file.write("Course             : {0}\r\n".format(row["course"]))
+                        self._output_file.write("Confidence         : {0}\r\n".format(row["confidence"]))
+                        self._output_file.write("Score              : {0}\r\n".format(row["score"]))
+                        self._output_file.write("Reach              : {0}\r\n".format(row["reach"]))
+                        self._output_file.write("\r\n")
+                else:
+                    self._output_file.write("No data in database.\r\n")
+            self._output_file.write("\r\n")
+        except sqlite3.Error as e:
+            logging.error("%s", e.args[0])
+            print("[ERROR] {0}".format(e.args[0]))
+        finally:
+            if conn:
+                conn.close()
+        self._output_file.write("="*50 + "\r\n")
+
+class Parse02():
+    """
+    Convenience class for parsing macOS data
+    """
+    def __init__(self, output_file, data_file):
+        self._output_file = output_file
+        self._data_file = data_file
+
+    def parse(self):
+        """
+        Parse data
+        """
+        query = "SELECT mac,channel,datetime(timestamp + 978307200, 'unixepoch'),latitude," \
+                "longitude,horizontalaccuracy,altitude,verticalaccuracy,speed,course," \
+                "confidence,score FROM wifilocation ORDER BY timestamp, mac"
+        conn = None
+        try:
+            conn = sqlite3.connect(self._data_file)
+            conn.row_factory = sqlite3.Row
+            with conn:
+                cur = conn.cursor()
+                cur.execute(query)
+                rows = cur.fetchall()
+                if len(rows) > 0:
+                    for row in rows:
+                        timestamp = riplib.osxripper_time.get_cocoa_seconds(row["timestamp"])
+                        self._output_file.write("MAC Address        : {0}\r\n".format(row["mac"]))
+                        self._output_file.write("Channel            : {0}\r\n".format(row["channel"]))
+                        self._output_file.write("Timestamp          : {0}\r\n".format(timestamp))
+                        self._output_file.write("Latitude           : {0}\r\n".format(row["latitude"]))
+                        self._output_file.write("Longitude          : {0}\r\n".format(row["longitude"]))
+                        self._output_file.write("Horizontal Accuracy: {0}\r\n".format(row["horizontalaccuracy"]))
+                        self._output_file.write("Altitude           : {0}\r\n".format(row["altitude"]))
+                        self._output_file.write("Vertical Accuracy  : {0}\r\n".format(row["verticalaccuracy"]))
+                        self._output_file.write("Speed              : {0}\r\n".format(row["speed"]))
+                        self._output_file.write("Course             : {0}\r\n".format(row["course"]))
+                        self._output_file.write("Confidence         : {0}\r\n".format(row["confidence"]))
+                        self._output_file.write("Score              : {0}\r\n".format(row["score"]))
+                        self._output_file.write("\r\n")
+                else:
+                    self._output_file.write("No data in database.\r\n")
+            self._output_file.write("\r\n")
+        except sqlite3.Error as e:
+            logging.error("%s", e.args[0])
+            print("[ERROR] {0}".format(e.args[0]))
+        finally:
+            if conn:
+                conn.close()
+        self._output_file.write("="*50 + "\r\n")
