@@ -1,10 +1,10 @@
 """ osxripper driver script """
 import argparse
-from datetime import datetime
 import importlib
 import logging
 import os
 import sys
+from datetime import datetime
 from plugins.osx_version import OSXVersion
 from plugins.summary import Summary
 
