@@ -1,9 +1,11 @@
-from riplib.plugin import Plugin
+""" Module to parse interactionC.db """
 import codecs
 import logging
 import os
-import riplib.osxripper_time
 import sqlite3
+import riplib.osxripper_time
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -20,11 +22,11 @@ class InteractionDatabase(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "Interaction Database"
-        self._description = "Parse information from /private/var/db/CoreDuet/People/interactionC.db"
-        self._data_file = "interactionC.db"
-        self._output_file = "Interaction_Database.txt"
-        self._type = "sqlite"
+        self.set_name("Interaction Database")
+        self.set_description("Parse information from /private/var/db/CoreDuet/People/interactionC.db")
+        self.set_data_file("interactionC.db")
+        self.set_output_file("Interaction_Database.txt")
+        self.set_type("sqlite")
 
     def parse(self):
         """
@@ -40,17 +42,17 @@ class InteractionDatabase(Plugin):
                 "zc.zlastoutgoingrecipientdate" \
                 " FROM z_primarykey zpk,zcontacts zc WHERE zpk.z_ent = zc.z_ent"
 
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             database_file = os.path.join(self._input_dir, "private", "var", "db", "CoreDuet", "People", self._data_file)
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 if not os.path.isfile(database_file):
-                    logging.warning("File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
+                    logging.warning("File: %s does not exist or cannot be found.\r\n", self._data_file)
+                    output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
                     print("[WARNING] File: {0} does not exist or cannot be found.".format(self._data_file))
                 else:
-                    of.write("Source Database: {0}\r\n\r\n".format(database_file))
+                    output_file.write("Source Database: {0}\r\n\r\n".format(database_file))
                     conn = None
                     try:
                         conn = sqlite3.connect(database_file)
@@ -60,49 +62,42 @@ class InteractionDatabase(Plugin):
                             cur.execute(query)
                             rows = cur.fetchall()
                             if len(rows) == 0:
-                                of.write("No data in database.\r\n")
+                                output_file.write("No data in database.\r\n")
                             else:
                                 for row in rows:
-                                    creationdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zcreationdate"])
-                                    firstinrecipdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zfirstincomingrecipientdate"])
-                                    firstinsenderdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zfirstincomingsenderdate"])
-                                    firstoutrecipdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zfirstoutgoingrecipientdate"])
-                                    lastinrecipdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingrecipientdate"])
-                                    lastinsenderdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingsenderdate"])
-                                    lastoutrecipdate = \
-                                        riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingsenderdate"])
+                                    creationdate = riplib.osxripper_time.get_cocoa_seconds(row["zcreationdate"])
+                                    firstinrecipdate = riplib.osxripper_time.get_cocoa_seconds(row["zfirstincomingrecipientdate"])
+                                    firstinsenderdate = riplib.osxripper_time.get_cocoa_seconds(row["zfirstincomingsenderdate"])
+                                    firstoutrecipdate = riplib.osxripper_time.get_cocoa_seconds(row["zfirstoutgoingrecipientdate"])
+                                    lastinrecipdate = riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingrecipientdate"])
+                                    lastinsenderdate = riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingsenderdate"])
+                                    lastoutrecipdate = riplib.osxripper_time.get_cocoa_seconds(row["zlastincomingsenderdate"])
 
-                                    of.write("Name                         : {0}\r\n".format(row["z_name"]))
-                                    of.write("Display Name                 : {0}\r\n".format(row["zdisplayname"]))
-                                    of.write("Identifier                   : {0}\r\n".format(row["zidentifier"]))
-                                    of.write("Creation Date                : {0}\r\n".format(creationdate))
-                                    of.write("First Incoming Recipient Date: {0}\r\n".format(firstinrecipdate))
-                                    of.write("First Incoming Sender Date   : {0}\r\n".format(firstinsenderdate))
-                                    of.write("First Outgoing Recipient Date: {0}\r\n".format(firstoutrecipdate))
-                                    of.write("Last Incoming Recipient Date : {0}\r\n".format(lastinrecipdate))
-                                    of.write("Last Incoming Sender Date    : {0}\r\n".format(lastinsenderdate))
-                                    of.write("Last Outgoing Recipient Date : {0}\r\n".format(lastoutrecipdate))
-                                    of.write("\r\n")
-                        of.write("\r\n")
-                    except sqlite3.Error as e:
-                        logging.error("{0}".format(e.args[0]))
-                        print("[ERROR] {0}".format(e.args[0]))
+                                    output_file.write("Name                         : {0}\r\n".format(row["z_name"]))
+                                    output_file.write("Display Name                 : {0}\r\n".format(row["zdisplayname"]))
+                                    output_file.write("Identifier                   : {0}\r\n".format(row["zidentifier"]))
+                                    output_file.write("Creation Date                : {0}\r\n".format(creationdate))
+                                    output_file.write("First Incoming Recipient Date: {0}\r\n".format(firstinrecipdate))
+                                    output_file.write("First Incoming Sender Date   : {0}\r\n".format(firstinsenderdate))
+                                    output_file.write("First Outgoing Recipient Date: {0}\r\n".format(firstoutrecipdate))
+                                    output_file.write("Last Incoming Recipient Date : {0}\r\n".format(lastinrecipdate))
+                                    output_file.write("Last Incoming Sender Date    : {0}\r\n".format(lastinsenderdate))
+                                    output_file.write("Last Outgoing Recipient Date : {0}\r\n".format(lastoutrecipdate))
+                                    output_file.write("\r\n")
+                        output_file.write("\r\n")
+                    except sqlite3.Error as error:
+                        logging.error("%s", error.args[0])
+                        print("[ERROR] {0}".format(error.args[0]))
                     finally:
                         if conn:
                             conn.close()
-                    of.write("="*50 + "\r\n")
+                    output_file.write("="*50 + "\r\n")
 
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported this plugin.")
                 print("[INFO] This version of OSX is not supported this plugin.")
-                of.write("[INFO] This version of OSX is not supported this plugin.\r\n")
+                output_file.write("[INFO] This version of OSX is not supported this plugin.\r\n")
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-        of.close()
+        output_file.close()
