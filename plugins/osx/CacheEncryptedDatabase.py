@@ -32,8 +32,8 @@ class CacheEncryptedDatabase(Plugin):
         """
         Read the /private/var/folders/.../cache_encryptedA.db
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             start_folder = os.path.join(self._input_dir, "private", "var", "folders")
             file_list = []
             for root, _, files in os.walk(start_folder):
@@ -42,7 +42,7 @@ class CacheEncryptedDatabase(Plugin):
 
             if len(file_list) == 0:
                 logging.warning("File: %s does not exist or cannot be found.\r\n", self._data_file)
-                of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
+                output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(self._data_file))
                 return
 
@@ -50,24 +50,25 @@ class CacheEncryptedDatabase(Plugin):
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
                 for database_file in file_list:
                     if os.path.isfile(database_file):
-                        of.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        parse_macOS = Parse01(of, database_file)
-                        parse_macOS.parse()
+                        output_file.write("Source Database: {0}\r\n\r\n".format(database_file))
+                        parse_os = Parse01(output_file, database_file)
+                        parse_os.parse()
 
             elif self._os_version == "mountain_lion":
                 for database_file in file_list:
                     if os.path.isfile(database_file):
-                        of.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        parse_macOS = Parse02(of, database_file)
+                        output_file.write("Source Database: {0}\r\n\r\n".format(database_file))
+                        parse_os = Parse02(output_file, database_file)
+                        parse_os.parse()
 
             elif self._os_version in ["lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported this plugin.")
                 print("[INFO] This version of OSX is not supported this plugin.")
-                of.write("[INFO] This version of OSX is not supported this plugin.\r\n")
+                output_file.write("[INFO] This version of OSX is not supported this plugin.\r\n")
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-        of.close()
+        output_file.close()
 
 class Parse01():
     """
@@ -113,9 +114,9 @@ class Parse01():
                 else:
                     self._output_file.write("No data in database.\r\n")
             self._output_file.write("\r\n")
-        except sqlite3.Error as e:
-            logging.error("%s", e.args[0])
-            print("[ERROR] {0}".format(e.args[0]))
+        except sqlite3.Error as error:
+            logging.error("%s", error.args[0])
+            print("[ERROR] {0}".format(error.args[0]))
         finally:
             if conn:
                 conn.close()
@@ -163,9 +164,9 @@ class Parse02():
                 else:
                     self._output_file.write("No data in database.\r\n")
             self._output_file.write("\r\n")
-        except sqlite3.Error as e:
-            logging.error("%s", e.args[0])
-            print("[ERROR] {0}".format(e.args[0]))
+        except sqlite3.Error as error:
+            logging.error("%s", error.args[0])
+            print("[ERROR] {0}".format(error.args[0]))
         finally:
             if conn:
                 conn.close()

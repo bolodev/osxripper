@@ -28,7 +28,7 @@ class Autoruns(Plugin):
         """
         List contents of known Launch* directories
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
             #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
@@ -43,17 +43,17 @@ class Autoruns(Plugin):
                                          lib_launch_agents, lib_launch_daemons, lib_startup_items]
                 for doi in collected_directories:
                     if os.path.isdir(doi):
-                        of.write("="*10 + " Autoruns: " + doi.replace(self._input_dir, "") + "="*10 + "\r\n")
-                        of.write("Source Directory: {0}\r\n\r\n".format(doi))
+                        output_file.write("="*10 + " Autoruns: " + doi.replace(self._input_dir, "") + "="*10 + "\r\n")
+                        output_file.write("Source Directory: {0}\r\n\r\n".format(doi))
                         file_listing = os.listdir(doi)
-                        for f in file_listing:
-                            of.write("\t{0}\r\n".format(f))
+                        for file_name in file_listing:
+                            output_file.write("\t{0}\r\n".format(file_name))
                     else:
                         logging.warning("Directory %s does not exist.", doi)
-                        of.write("[WARNING] Directory {0} does not exist or cannot be found.\r\n".format(doi))
+                        output_file.write("[WARNING] Directory {0} does not exist or cannot be found.\r\n".format(doi))
                         print("[WARNING] Directory {0} does not exist.".format(doi))
             else:
                 logging.warning("[WARNING] Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()

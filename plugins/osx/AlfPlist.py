@@ -47,14 +47,14 @@ class AlfPlist(Plugin):
             #                        "mavericks"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks"]:
-                parse_macOS = Parse01(output_file, plist)
-                parse_macOS.parse()
+                parse_osx = Parse01(output_file, plist)
+                parse_osx.parse()
             elif self._os_version in ["mountain_lion", "lion"]:
-                parse_macOS = Parse02(output_file, plist)
-                parse_macOS.parse()
+                parse_osx = Parse02(output_file, plist)
+                parse_osx.parse()
             elif self._os_version == "snow_leopard":
-                parse_macOS = Parse03(output_file, plist)
-                parse_macOS.parse()
+                parse_osx = Parse03(output_file, plist)
+                parse_osx.parse()
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")

@@ -1,8 +1,10 @@
-from riplib.plugin import Plugin
+""" Module to parse data from accounts.plist """
 import codecs
 import logging
 import os
 import riplib.ccl_bplist
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -13,7 +15,7 @@ class DeletedUsersPlist(Plugin):
     """
     Plugin to parse /Library/Preferences/com.apple.preferences.accounts.plist
     """
-    
+
     def __init__(self):
         """
         Initialise plugins
@@ -24,7 +26,7 @@ class DeletedUsersPlist(Plugin):
         self._data_file = "com.apple.preferences.accounts.plist"
         self._output_file = "DeletedUsers.txt"
         self._type = "bplist"
-        
+
     def parse(self):
         """
         Parse bplist com.apple.preferences.accounts.plist
@@ -36,7 +38,7 @@ class DeletedUsersPlist(Plugin):
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
             #                         "mavericks", "mountain_lion", "lion","snow_leopard"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-                                    "mavericks", "mountain_lion", "lion","snow_leopard"]:
+                                    "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     bplist = open(file, "rb")
                     pl = riplib.ccl_bplist.load(bplist)
@@ -53,7 +55,7 @@ class DeletedUsersPlist(Plugin):
                         pass
                     bplist.close()
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.".format(file))
+                    logging.warning("File: %s does not exist or cannot be found.", file)
                     of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                     print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
             else:

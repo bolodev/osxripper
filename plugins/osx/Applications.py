@@ -28,26 +28,26 @@ class Applications(Plugin):
         """
         List contents of /Applications directory
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
             # N.B. Not testing OS version as /Applications is common to recent OSX versions
             applications_dir = os.path.join(self._input_dir, "Applications")
             if os.path.isdir(applications_dir):
-                of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-                of.write("Source Directory: {0}\r\n\r\n".format(applications_dir))
+                output_file.write("="*10 + " " + self.get_name + " " + "="*10 + "\r\n")
+                output_file.write("Source Directory: {0}\r\n\r\n".format(applications_dir))
                 file_listing = os.listdir(applications_dir)
-                for f in file_listing:
-                    if not f.endswith(".app") and os.path.isdir(os.path.join(applications_dir, f)):
-                        of.write("\t{0}\r\n".format(f))
-                        sub_dir = os.path.join(applications_dir, f)
+                for file_name in file_listing:
+                    if not file_name.endswith(".app") and os.path.isdir(os.path.join(applications_dir, file_name)):
+                        output_file.write("\t{0}\r\n".format(file_name))
+                        sub_dir = os.path.join(applications_dir, file_name)
                         sub_dir_list = os.listdir(sub_dir)
-                        for file_name in sub_dir_list:
-                            of.write("\t\t{0}\r\n".format(file_name))
+                        for file_name1 in sub_dir_list:
+                            output_file.write("\t\t{0}\r\n".format(file_name1))
                     else:
-                        of.write("\t{0}\r\n".format(f))
+                        output_file.write("\t{0}\r\n".format(file_name))
             else:
                 logging.warning("Directory %s does not exist.", applications_dir)
-                of.write("[WARNING] Directory {0} does not exist or cannot be found.\r\n".format(applications_dir))
+                output_file.write("[WARNING] Directory {0} does not exist or cannot be found.\r\n".format(applications_dir))
                 print("[WARNING] Directory {0} does not exist.".format(applications_dir))
 
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
