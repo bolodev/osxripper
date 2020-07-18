@@ -22,11 +22,11 @@ class DhcpLeasesPlist(Plugin):
         Initialise plugins
         """
         super().__init__()
-        self._name = "DHCP Leases"
-        self._description = "Parse DHCP Lease plists from /private/var/db/dhcpclient/leases/en"
-        self._data_file = ""  # Empty as parsing multiple files
-        self._output_file = "Networking.txt"
-        self._type = "plist"
+        self.set_name("DHCP Leases")
+        self.set_description("Parse DHCP Lease plists from /private/var/db/dhcpclient/leases/en")
+        self.set_data_file("")  # Empty as parsing multiple files
+        self.set_output_file("Networking.txt")
+        self.set_type("plist")
 
     def parse(self):
         """

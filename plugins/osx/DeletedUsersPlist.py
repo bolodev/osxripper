@@ -21,11 +21,11 @@ class DeletedUsersPlist(Plugin):
         Initialise plugins
         """
         super().__init__()
-        self._name = "Deleted Users"
-        self._description = "List deleted users"
-        self._data_file = "com.apple.preferences.accounts.plist"
-        self._output_file = "DeletedUsers.txt"
-        self._type = "bplist"
+        self.set_name("Deleted Users")
+        self.set_description("List deleted users")
+        self.set_data_file("com.apple.preferences.accounts.plist")
+        self.set_output_file("DeletedUsers.txt")
+        self.set_type("bplist")
 
     def parse(self):
         """
