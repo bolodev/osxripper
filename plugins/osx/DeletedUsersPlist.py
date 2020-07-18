@@ -31,35 +31,35 @@ class DeletedUsersPlist(Plugin):
         """
         Parse bplist com.apple.preferences.accounts.plist
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             file = os.path.join(self._input_dir, "Library", "Preferences", self._data_file)
-            of.write("Source File: {0}\r\n\r\n".format(file))
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
             #                         "mavericks", "mountain_lion", "lion","snow_leopard"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     bplist = open(file, "rb")
-                    pl = riplib.ccl_bplist.load(bplist)
+                    plist_to_load = riplib.ccl_bplist.load(bplist)
                     try:
-                        if "deletedUsers" in pl:
-                            user_array = pl["deletedUsers"]
+                        if "deletedUsers" in plist_to_load:
+                            user_array = plist_to_load["deletedUsers"]
                             for user in user_array:
-                                of.write("Real Name: {0}\r\n".format(user["dsAttrTypeStandard:RealName"]))
-                                of.write("Name     : {0}\r\n".format(user["name"]))
-                                of.write("Date     : {0}\r\n".format(user["date"]))
-                                of.write("UID      : {0}\r\n".format(user["dsAttrTypeStandard:UniqueID"]))
-                                of.write("\r\n")
+                                output_file.write("Real Name: {0}\r\n".format(user["dsAttrTypeStandard:RealName"]))
+                                output_file.write("Name     : {0}\r\n".format(user["name"]))
+                                output_file.write("Date     : {0}\r\n".format(user["date"]))
+                                output_file.write("UID      : {0}\r\n".format(user["dsAttrTypeStandard:UniqueID"]))
+                                output_file.write("\r\n")
                     except KeyError:
                         pass
                     bplist.close()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.", file)
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+                    output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                     print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
