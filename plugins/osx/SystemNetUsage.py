@@ -1,9 +1,11 @@
-from riplib.plugin import Plugin
+""" Module to get information from /private/var/networkd/netusage.sqlite """
 import codecs
 import logging
 import os
-import riplib.osxripper_time
 import sqlite3
+import riplib.osxripper_time
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -14,65 +16,65 @@ class SystemNetUsage(Plugin):
     """
     Parse information from /private/var/networkd/netusage.sqlite
     """
-
     def __init__(self):
         """
         Initialise the class.
         """
         super().__init__()
-        self._name = "System Net Usage"
-        self._description = "Parse information from /private/var/networkd/netusage.sqlite"
-        self._data_file = "netusage.sqlite"
-        self._output_file = "System_NetUsage.txt"
-        self._type = "sqlite"
+        self.set_name("System Net Usage")
+        self.set_description("Parse information from /private/var/networkd/netusage.sqlite")
+        self.set_data_file("netusage.sqlite")
+        self.set_output_file("System_NetUsage.txt")
+        self.set_type("sqlite")
 
     def parse(self):
         """
         Read the /private/var/networkd/netusage.sqlite SQLite database
         """
-        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             file = os.path.join(self._input_dir, "private", "var", "networkd", self._data_file)
-            of.write("Source File: {0}\r\n\r\n".format(file))
-            # if self._os_version == "el_capitan":
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 if os.path.isfile(file):
-                    pass
                     conn = None
                     try:
                         conn = sqlite3.connect(file)
                         conn.row_factory = sqlite3.Row
-                        of.write("="*10 + " Network Attachments " + "="*10 + "\r\n")
-                        run_network_attachment_query(conn, of)
-                        of.write("="*10 + " Networked Processes " + "="*10 + "\r\n")
-                        run_process_query(conn, of)
-                        of.write("="*10 + " Network Process Usage " + "="*10 + "\r\n")
-                        run_live_usage_query(conn, of)
-                        of.write("\r\n")
-                    except sqlite3.Error as e:
-                        logging.error("{0}".format(e.args[0]))
-                        print("[ERROR] {0}".format(e.args[0]))
+                        output_file.write("="*10 + " Network Attachments " + "="*10 + "\r\n")
+                        run_network_attachment_query(conn, output_file)
+                        output_file.write("="*10 + " Networked Processes " + "="*10 + "\r\n")
+                        run_process_query(conn, output_file)
+                        output_file.write("="*10 + " Network Process Usage " + "="*10 + "\r\n")
+                        run_live_usage_query(conn, output_file)
+                        output_file.write("\r\n")
+                    except sqlite3.Error as error:
+                        logging.error("%s", error.args[0])
+                        print("[ERROR] {0}".format(error.args[0]))
                     finally:
                         if conn:
                             conn.close()
                 else:
-                    logging.warning("File: {0} does not exist or cannot be found.\r\n".format(file))
-                    of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+                    logging.warning("File: %s does not exist or cannot be found.\r\n", file)
+                    output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                     print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
 
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
-                of.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
+                output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
 
 
 def run_process_query(sqlite_connection, output_file):
+    """
+    Query Process & time details
+    """
     query = "SELECT zpk.z_name,zp.zprocname,zp.zfirsttimestamp,zp.ztimestamp FROM zprocess zp,z_primarykey zpk " \
             "WHERE zp.z_ent = zpk.z_ent ORDER BY zpk.z_name"
     with sqlite_connection:
@@ -90,6 +92,9 @@ def run_process_query(sqlite_connection, output_file):
 
 
 def run_live_usage_query(sqlite_connection, output_file):
+    """
+    Query Process & time details for WiFi usage
+    """
     query = "SELECT zpk.z_name,zp.zprocname,zlu.ztimestamp,zlu.zwifiin," \
             "zlu.zwifiout,zlu.zwiredin,zlu.zwiredout,zlu.zwwanin,zlu.zwwanout FROM zprocess zp,zliveusage zlu," \
             "z_primarykey zpk WHERE zp.z_ent = zpk.z_ent AND zp.z_pk = zlu.zhasprocess ORDER BY zpk.z_name"
@@ -112,27 +117,30 @@ def run_live_usage_query(sqlite_connection, output_file):
 
 
 def run_network_attachment_query(sqlite_connection, output_file):
+    """
+    Query to Network and MAC address data
+    """
     query = "SELECT zpk.z_name,zna.zidentifier,zna.zfirsttimestamp,zna.ztimestamp " \
             "FROM znetworkattachment zna,z_primarykey zpk " \
             "WHERE zna.z_ent = zpk.z_ent ORDER BY zpk.z_name"
     with sqlite_connection:
-            cur = sqlite_connection.cursor()
-            cur.execute(query)
-            rows = cur.fetchall()
-            for row in rows:
-                zfirsttimestamp = riplib.osxripper_time.get_cocoa_seconds(row["zfirsttimestamp"])
-                ztimestamp = riplib.osxripper_time.get_cocoa_seconds(row["ztimestamp"])
-                output_file.write("Name           : {0}\r\n".format(row[0]))
-                if row["zidentifier"] is None:
-                    output_file.write("Network        : None\r\n")
-                    output_file.write("MAC Address    : None\r\n")
-                else:
-                    ident = row["zidentifier"]
-                    dash_index = ident.rfind("-")
-                    network_name = ident[0:dash_index]
-                    network_mac = ident[dash_index+1:len(ident)]
-                    output_file.write("Network        : {0}\r\n".format(network_name))
-                    output_file.write("MAC Address    : {0}\r\n".format(network_mac))
-                output_file.write("First Timestamp: {0}\r\n".format(zfirsttimestamp))
-                output_file.write("Timestamp      : {0}\r\n".format(ztimestamp))
-                output_file.write("\r\n")
+        cur = sqlite_connection.cursor()
+        cur.execute(query)
+        rows = cur.fetchall()
+        for row in rows:
+            zfirsttimestamp = riplib.osxripper_time.get_cocoa_seconds(row["zfirsttimestamp"])
+            ztimestamp = riplib.osxripper_time.get_cocoa_seconds(row["ztimestamp"])
+            output_file.write("Name           : {0}\r\n".format(row[0]))
+            if row["zidentifier"] is None:
+                output_file.write("Network        : None\r\n")
+                output_file.write("MAC Address    : None\r\n")
+            else:
+                ident = row["zidentifier"]
+                dash_index = ident.rfind("-")
+                network_name = ident[0:dash_index]
+                network_mac = ident[dash_index+1:len(ident)]
+                output_file.write("Network        : {0}\r\n".format(network_name))
+                output_file.write("MAC Address    : {0}\r\n".format(network_mac))
+            output_file.write("First Timestamp: {0}\r\n".format(zfirsttimestamp))
+            output_file.write("Timestamp      : {0}\r\n".format(ztimestamp))
+            output_file.write("\r\n")
