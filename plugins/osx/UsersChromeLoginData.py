@@ -1,9 +1,10 @@
-from riplib.plugin import Plugin
+""" Module to parse information from Google Chrome login data """
 import codecs
 import logging
 import os
-import riplib.osxripper_time
 import sqlite3
+import riplib.osxripper_time
+from riplib.plugin import Plugin
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -20,13 +21,12 @@ class UsersChromeLoginData(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "User Chrome Browser Login Data"
-        self._description = "Parse information from " \
-                            "/Users/<username>/Library/Application Support/Google/Chrome/Default/Login Data"
-        self._data_file = "Login Data"
-        self._output_file = ""  # this will have to be defined per user account
-        self._type = "sqlite"
-    
+        self.set_name("User Chrome Browser Login Data")
+        self.set_description("Parse information from /Users/<username>/Library/Application Support/Google/Chrome/Default/Login Data")
+        self.set_data_file("Login Data")
+        self.set_output_file("")  # this will have to be defined per user account
+        self.set_type("sqlite")
+
     def parse(self):
         """
         Iterate over /Users directory and find user sub-directories
@@ -42,19 +42,18 @@ class UsersChromeLoginData(Plugin):
                     if os.path.isdir(history_path):
                         self.__parse_sqlite_db(history_path, username)
                     else:
-                        logging.warning("{0} does not exist.".format(history_path))
+                        logging.warning("%s does not exist.", history_path)
                         print("[WARNING] {0} does not exist.".format(history_path))
         else:
-            logging.warning("{0} does not exist.".format(users_path))
+            logging.warning("%s does not exist.", users_path)
             print("[WARNING] {0} does not exist.".format(users_path))
-    
+
     def __parse_sqlite_db(self, file, username):
         """
         Read the Login Data SQLite database
         """
-        with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Chrome_Login_Data.txt"), "a",
-                         encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+        with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Chrome_Login_Data.txt"), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             history_db = os.path.join(file, self._data_file)
             # query = "SELECT username_value,display_name,origin_url,action_url," \
             #         "date_created,date_synced," \
@@ -65,47 +64,47 @@ class UsersChromeLoginData(Plugin):
                     "signon_realm,preferred,times_used,blacklisted_by_user," \
                     "scheme,password_type,federation_url FROM logins ORDER BY username_value"
             if os.path.isfile(history_db):
-                of.write("Source File: {0}\r\n\r\n".format(history_db))
-                of.write("N.B. Creds are stored as BLOBS, not retrieved by this plugin\r\n\r\n")
+                output_file.write("Source File: {0}\r\n\r\n".format(history_db))
+                output_file.write("N.B. Creds are stored as BLOBS, not retrieved by this plugin\r\n\r\n")
                 conn = None
                 try:
                     conn = sqlite3.connect(history_db)
                     conn.row_factory = sqlite3.Row
-                    with conn:    
+                    with conn:
                         cur = conn.cursor()
                         cur.execute(query)
                         rows = cur.fetchall()
                         if len(rows) == 0:
-                            of.write("No data found in this database.\r\n\r\n")
+                            output_file.write("No data found in this database.\r\n\r\n")
                         else:
                             for row in rows:
                                 date_created = riplib.osxripper_time.get_gregorian_micros(row["date_created"])
                                 date_synced = riplib.osxripper_time.get_gregorian_micros(row["date_synced"])
-                                of.write("Username           : {0}\r\n".format(row["username_value"]))
-                                of.write("Display Name       : {0}\r\n".format(row["display_name"]))
-                                of.write("Origin URL         : {0}\r\n".format(row["origin_url"]))
-                                of.write("Action URL         : {0}\r\n".format(row["action_url"]))
-                                of.write("Date Created       : {0}\r\n".format(date_created))
-                                of.write("Date Synced        : {0}\r\n".format(date_synced))
-                                of.write("Signon Realm       : {0}\r\n".format(row["signon_realm"]))
-                                of.write("SSL Valid          : {0}\r\n".format(row["ssl_valid"]))
-                                of.write("Preferred          : {0}\r\n".format(row["preferred"]))
-                                of.write("Times Used         : {0}\r\n".format(row["times_used"]))
-                                of.write("Blacklisted by User: {0}\r\n".format(row["blacklisted_by_user"]))
-                                of.write("Scheme             : {0}\r\n".format(row["scheme"]))
-                                of.write("Password Type      : {0}\r\n".format(row["password_type"]))
-                                # of.write("Avatar URL         : {0}\r\n".format(row["avatar_url"]))
-                                of.write("Federation URL     : {0}\r\n".format(row["federation_url"]))
-                                of.write("\r\n")
-                except sqlite3.Error as e:
-                    logging.error("{0}".format(e.args[0]))
-                    print("[ERROR] {0}".format(e.args[0]))
+                                output_file.write("Username           : {0}\r\n".format(row["username_value"]))
+                                output_file.write("Display Name       : {0}\r\n".format(row["display_name"]))
+                                output_file.write("Origin URL         : {0}\r\n".format(row["origin_url"]))
+                                output_file.write("Action URL         : {0}\r\n".format(row["action_url"]))
+                                output_file.write("Date Created       : {0}\r\n".format(date_created))
+                                output_file.write("Date Synced        : {0}\r\n".format(date_synced))
+                                output_file.write("Signon Realm       : {0}\r\n".format(row["signon_realm"]))
+                                output_file.write("SSL Valid          : {0}\r\n".format(row["ssl_valid"]))
+                                output_file.write("Preferred          : {0}\r\n".format(row["preferred"]))
+                                output_file.write("Times Used         : {0}\r\n".format(row["times_used"]))
+                                output_file.write("Blacklisted by User: {0}\r\n".format(row["blacklisted_by_user"]))
+                                output_file.write("Scheme             : {0}\r\n".format(row["scheme"]))
+                                output_file.write("Password Type      : {0}\r\n".format(row["password_type"]))
+                                # output_file.write("Avatar URL         : {0}\r\n".format(row["avatar_url"]))
+                                output_file.write("Federation URL     : {0}\r\n".format(row["federation_url"]))
+                                output_file.write("\r\n")
+                except sqlite3.Error as error:
+                    logging.error("%s", error.args[0])
+                    print("[ERROR] {0}".format(error.args[0]))
                 finally:
                     if conn:
                         conn.close()
             else:
-                logging.warning("File: {0} does not exist or cannot be found.\r\n".format(file))
-                of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+                logging.warning("File: %s does not exist or cannot be found.\r\n", file)
+                output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
