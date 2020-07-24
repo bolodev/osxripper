@@ -1,8 +1,10 @@
-from riplib.plugin import Plugin
+""" Module to parse commerce plist """
 import codecs
 import logging
 import os
 import riplib.ccl_bplist
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -19,12 +21,12 @@ class UsersCommercePlist(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "User Appstore"
-        self._description = "Parse information from /Users/username/Library/Preferences/com.apple.commerce.plist"
-        self._data_file = "com.apple.commerce.plist"
-        self._output_file = ""  # this will have to be defined per user account
-        self._type = "bplist"
-    
+        self.set_name("User Appstore")
+        self.set_description("Parse information from /Users/username/Library/Preferences/com.apple.commerce.plist")
+        self.set_data_file("com.apple.commerce.plist")
+        self.set_output_file("")  # this will have to be defined per user account
+        self.set_type("bplist")
+
     def parse(self):
         """
         Iterate over /Users directory and find user sub-directories
@@ -39,66 +41,66 @@ class UsersCommercePlist(Plugin):
                     if os.path.isfile(plist):
                         self.__parse_bplist(plist, username)
                     else:
-                        logging.warning("{0} does not exist.".format(plist))
+                        logging.warning("%s does not exist.", plist)
                         print("[WARNING] {0} does not exist.".format(plist))
         else:
-            logging.warning("{0} does not exist.".format(users_path))
+            logging.warning("%s does not exist.", users_path)
             print("[WARNING] {0} does not exist.".format(users_path))
-            
+
     def __parse_bplist(self, file, username):
         """
         Parse /Users/username/Library/Preferences/com.apple.commerce.plist
         """
-        with codecs.open(os.path.join(self._output_dir, "Users_" + username + ".txt"), "a", encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-            of.write("Source File: {0}\r\n\r\n".format(file))
+        with codecs.open(os.path.join(self._output_dir, "Users_" + username + ".txt"), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
             # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
             if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
                 bplist = open(file, "rb")
                 plist = riplib.ccl_bplist.load(bplist)
+                bplist.close()
                 try:
                     if "AllowLegacyConversion" in plist:
-                        of.write("Allow Legacy Conversion     : {0}\r\n".format(plist["AllowLegacyConversion"]))
+                        output_file.write("Allow Legacy Conversion     : {0}\r\n".format(plist["AllowLegacyConversion"]))
                     if "LastAutoUpdateInvocation" in plist:
-                        of.write("Last Auto Update Invocation : {0}\r\n".format(plist["LastAutoUpdateInvocation"]))
+                        output_file.write("Last Auto Update Invocation : {0}\r\n".format(plist["LastAutoUpdateInvocation"]))
                     accounts = plist["KnownAccounts"]
-                    of.write("Accounts:\r\n\r\n")
+                    output_file.write("Accounts:\r\n\r\n")
                     for account in accounts:
-                        of.write("\tAccount:\r\n")
+                        output_file.write("\tAccount:\r\n")
                         if "identifier" in account:
-                            of.write("\t\tIdentifier: {0}\r\n".format(account["identifier"]))
+                            output_file.write("\t\tIdentifier: {0}\r\n".format(account["identifier"]))
                         if "dsid" in account:
-                            of.write("\t\tDSID: {0}\r\n".format(account["dsid"]))
+                            output_file.write("\t\tDSID: {0}\r\n".format(account["dsid"]))
                         if "signedin" in account:
-                            of.write("\t\tSigned In: {0}\r\n".format(account["signedin"]))
+                            output_file.write("\t\tSigned In: {0}\r\n".format(account["signedin"]))
                         if "credit" in account:
                             if len(account["credit"]) == 0:
-                                of.write("\t\tCredit: No credit.\r\n")
+                                output_file.write("\t\tCredit: No credit.\r\n")
                             else:
-                                of.write("\t\tCredit: {0}\r\n".format(account["credit"]))
+                                output_file.write("\t\tCredit: {0}\r\n".format(account["credit"]))
                         if "kind" in account:
-                            of.write("\t\tAcct. Kind: {0}\r\n".format(account["kind"]))
+                            output_file.write("\t\tAcct. Kind: {0}\r\n".format(account["kind"]))
                         if "storefront" in account:
-                            of.write("\t\tStorefront: {0}\r\n".format(account["storefront"]))
+                            output_file.write("\t\tStorefront: {0}\r\n".format(account["storefront"]))
                         if "bagtype" in account:
-                            of.write("\t\tBag Type: {0}\r\n".format(account["bagtype"]))
-                        of.write("\r\n")
-                        
+                            output_file.write("\t\tBag Type: {0}\r\n".format(account["bagtype"]))
+                        output_file.write("\r\n")
+
                     if "PurchasesInflight" in plist:
-                        of.write("Purchases Inflight          : {0}\r\n".format(plist["PurchasesInflight"]))
+                        output_file.write("Purchases Inflight          : {0}\r\n".format(plist["PurchasesInflight"]))
                     if "PrimaryAccountMigrated" in plist:
-                        of.write("Primary Account Migrated    : {0}\r\n".format(plist["PrimaryAccountMigrated"]))
+                        output_file.write("Primary Account Migrated    : {0}\r\n".format(plist["PrimaryAccountMigrated"]))
                     if "NextClientIDPingDate" in plist:
-                        of.write("Next Client ID Ping Date    : {0}\r\n".format(plist["NextClientIDPingDate"]))
+                        output_file.write("Next Client ID Ping Date    : {0}\r\n".format(plist["NextClientIDPingDate"]))
                 except KeyError:
                     pass
-                bplist.close()
             elif self._os_version in ["mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
-                of.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
+                output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
             else:
                 logging.warning("Not a known OSX version.")
                 print("[WARNING] Not a known OSX version.")
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
