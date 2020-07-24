@@ -1,7 +1,9 @@
-from riplib.plugin import Plugin
+""" Module to list .app folders in users' home folder """
 import codecs
 import logging
 import os
+from riplib.plugin import Plugin
+
 
 __author__ = 'bolodev'
 __version__ = '0.1'
@@ -18,12 +20,12 @@ class UsersApplications(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "User Applications"
-        self._description = "List applications in users' folders"
-        self._data_file = ""
-        self._output_file = ""
-        self._type = "dir_list"
-    
+        self.set_name("User Applications")
+        self.set_description("List applications in users' folders")
+        self.set_data_file("")
+        self.set_output_file("")
+        self.set_type("dir_list")
+
     def parse(self):
         """
         Iterate over /Users directory and find user sub-directories
@@ -37,24 +39,23 @@ class UsersApplications(Plugin):
                     if os.path.isdir(user_dir):
                         self.__list_files(user_dir, username)
                     else:
-                        logging.warning("{0} does not exist.".format(user_dir))
+                        logging.warning("%s does not exist.", user_dir)
                         print("[WARNING] {0} does not exist.".format(user_dir))
         else:
-            logging.warning("{0} does not exist.".format(users_path))
+            logging.warning("%s does not exist.", users_path)
             print("[WARNING] {0} does not exist.".format(users_path))
-            
+
     def __list_files(self, file, username):
         """
         List .app directories
         """
-        with codecs.open(os.path.join(self._output_dir, "Users_" + username + '_Applications.txt'), "a",
-                         encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-            of.write("Source Directory: {0}\r\n\r\n".format(file))
-            for root, dirs, files in os.walk(file):
+        with codecs.open(os.path.join(self._output_dir, "Users_" + username + '_Applications.txt'), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+            output_file.write("Source Directory: {0}\r\n\r\n".format(file))
+            for root, dirs, _ in os.walk(file):
                 for user_dir in dirs:
                     if user_dir.endswith(".app"):
-                        of.write("{0}{1}{2}\r\n".format(root, os.path.sep, user_dir, sep=""))
+                        output_file.write("{0}{1}{2}\r\n".format(root, os.path.sep, user_dir, sep=""))
 
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
