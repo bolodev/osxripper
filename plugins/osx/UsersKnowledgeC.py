@@ -1,8 +1,10 @@
-from riplib.plugin import Plugin
+""" Module to parse KnowledgeC database """
 import codecs
 import logging
 import os
 import sqlite3
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -18,12 +20,11 @@ class UsersKnowledgeC(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "User KnowledgeC"
-        self._description = "Parse information from " \
-                            "/Users/<username>/Library/"
-        self._data_file = "KnowledgeC.db"
-        self._output_file = ""  # this will have to be defined per user account
-        self._type = "sqlite"
+        self.set_name("User KnowledgeC")
+        self.set_description("Parse information from /Users/<username>/Library/")
+        self.set_data_file("KnowledgeC.db")
+        self.set_output_file("")  # this will have to be defined per user account
+        self.set_type("sqlite")
 
     def parse(self):
         """
@@ -34,32 +35,30 @@ class UsersKnowledgeC(Plugin):
         if os.path.isdir(users_path):
             user_list = os.listdir(users_path)
             for username in user_list:
-                with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_KnowledgeC.txt"), "a",
-                                 encoding="utf-8") as of:
+                with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_KnowledgeC.txt"), "a", encoding="utf-8") as output_file:
                     # if self._os_version in ["big_sur", "catalina"]:
                     if self._os_version in ["catalina"]:
                         logging.info("This version of OSX is not supported by this plugin.")
                         print("[INFO] This version of OSX is not supported by this plugin.")
-                        of.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
+                        output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
                     elif self._os_version in ["mojave", "high_sierra"]:
                         if os.path.isdir(os.path.join(users_path, username)) and not username == "Shared":
-                            knowledgec_path = os.path.join(users_path, username, "Library", "Application Support",
-                                                           "Knowledge")
+                            knowledgec_path = os.path.join(users_path, username, "Library", "Application Support", "Knowledge")
                             if os.path.isdir(knowledgec_path):
-                                self.__parse_sqlite_db(knowledgec_path, of)
+                                self.__parse_sqlite_db(knowledgec_path, output_file)
                             else:
-                                logging.warning("{0} does not exist.".format(knowledgec_path))
+                                logging.warning("%s does not exist.", knowledgec_path)
                                 print("[WARNING] {0} does not exist.".format(knowledgec_path))
                     elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard",
                                               "sierra", "el_capitan"]:
                         logging.info("This version of OSX is not supported by this plugin.")
                         print("[INFO] This version of OSX is not supported by this plugin.")
-                        of.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
+                        output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
                     else:
                         logging.warning("Not a known OSX version.")
                         print("[WARNING] Not a known OSX version.")
-                    of.write("=" * 40 + "\r\n\r\n")
-                of.close()
+                    output_file.write("=" * 40 + "\r\n\r\n")
+                output_file.close()
 
     def __parse_sqlite_db(self, database_file, output_file):
         """
@@ -115,14 +114,14 @@ class UsersKnowledgeC(Plugin):
                             output_file.write("{0}\t".format(row["ZVALUESTRING"]))
                             output_file.write("\r\n")
                 output_file.write("\r\n")
-            except sqlite3.Error as e:
-                logging.error("{0}".format(e.args[0]))
-                print("[ERROR] {0}".format(e.args[0]))
+            except sqlite3.Error as error:
+                logging.error("%s", error.args[0])
+                print("[ERROR] {0}".format(error.args[0]))
             finally:
                 if sqlite_connection:
                     sqlite_connection.close()
         else:
-            logging.warning("File: {0} does not exist or cannot be found.\r\n".format(database_file))
+            logging.warning("File: %s does not exist or cannot be found.\r\n", database_file)
             output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(database_file))
             print("[WARNING] File: {0} does not exist or cannot be found.".format(database_file))
             output_file.write("=" * 40 + "\r\n\r\n")
