@@ -1,8 +1,10 @@
-from riplib.plugin import Plugin
+""" Module to parse Firefox plist """
 import codecs
 import logging
 import os
 import riplib.ccl_bplist
+from riplib.plugin import Plugin
+
 
 __author__ = 'osxripper'
 __version__ = '0.1'
@@ -19,12 +21,12 @@ class UsersMozillaFirefoxPlist(Plugin):
         Initialise the class.
         """
         super().__init__()
-        self._name = "User Mozilla Firefox"
-        self._description = "Parse information from /Users/username/Library/Preferences/org.mozilla.firefox.plist"
-        self._data_file = "org.mozilla.firefox.plist"
-        self._output_file = ""  # this will have to be defined per user account
-        self._type = "bplist"
-    
+        self.set_name("User Mozilla Firefox")
+        self.set_description("Parse information from /Users/username/Library/Preferences/org.mozilla.firefox.plist")
+        self.set_data_file("org.mozilla.firefox.plist")
+        self.set_output_file("")  # this will have to be defined per user account
+        self.set_type("bplist")
+
     def parse(self):
         """
         Iterate over /Users directory and find user sub-directories
@@ -38,36 +40,34 @@ class UsersMozillaFirefoxPlist(Plugin):
                     if os.path.isfile(plist):
                         self.__parse_bplist(plist, username)
                     else:
-                        logging.warning("{0} does not exist.".format(plist))
+                        logging.warning("%s does not exist.", plist)
                         print("[WARNING] {0} does not exist.".format(plist))
         else:
-            logging.warning("{0} does not exist.".format(users_path))
+            logging.warning("%s does not exist.", users_path)
             print("[WARNING] {0} does not exist.".format(users_path))
-            
+
     def __parse_bplist(self, file, username):
         """
         Parse /Users/username/Library/Preferences/org.mozilla.firefox.plist
         """
-        with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Firefox.txt"), "a",
-                         encoding="utf-8") as of:
-            of.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-            of.write("Source File: {0}\r\n\r\n".format(file))
+        with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Firefox.txt"), "a", encoding="utf-8") as output_file:
+            output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
             if os.path.isfile(file):
                 bplist = open(file, "rb")
                 plist = riplib.ccl_bplist.load(bplist)
                 try:
                     if "NSTreatUnknownArgumentsAsOpen" in plist:
-                        of.write("Treat Unknown Arguments As Open: {0}\r\n\r\n"
-                                 .format(plist["NSTreatUnknownArgumentsAsOpen"]))
+                        output_file.write("Treat Unknown Arguments As Open: {0}\r\n\r\n".format(plist["NSTreatUnknownArgumentsAsOpen"]))
                     if "NSNavLastRootDirectory" in plist:
-                        of.write("Nav Last Root Directory        : {0}\r\n\r\n".format(plist["NSNavLastRootDirectory"]))
-                    of.write("\r\n")
+                        output_file.write("Nav Last Root Directory        : {0}\r\n\r\n".format(plist["NSNavLastRootDirectory"]))
+                    output_file.write("\r\n")
                 except KeyError:
                     pass
                 bplist.close()
             else:
-                logging.warning("File: {0} does not exist or cannot be found.".format(file))
-                of.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
+                logging.warning("File: %s does not exist or cannot be found.", file)
+                output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(file))
-            of.write("="*40 + "\r\n\r\n")
-        of.close()
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
