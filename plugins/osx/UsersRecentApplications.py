@@ -25,7 +25,7 @@ class UsersRecentApplications(Plugin):
         self.set_name("User Recent Hosts Shared File List")
         self.set_description("Parse information from /Users/username/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.RecentApplications.sfl")
         self.set_data_file("com.apple.LSSharedFileList.RecentApplications.sfl")
-        self.set_output_file("Users_RecentApplications.txt")
+        self.set_output_file("_RecentApplications.txt")
         self.set_type = "bplist"
 
     def parse(self):
