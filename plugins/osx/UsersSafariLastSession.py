@@ -99,14 +99,18 @@ class Parse01():
                 for session_window in self._data_file["SessionWindows"]:
                     if "TabStates" in session_window:
                         self._output_file.write("Tabs:\r\n")
-                        for tab_state in session_window["TabStates"]:
-                            if "TabURL" in tab_state:
-                                self._output_file.write("\tTab URL  : {0}\r\n".format(tab_state["TabURL"]))
-                            if "TabTitle" in tab_state:
-                                self._output_file.write("\tTab Title: {0}\r\n".format(tab_state["TabTitle"]))
-                            self._output_file.write("\r\n")
+                        self._parse_tab_state(session_window)
         except KeyError:
             pass
+
+    def _parse_tab_state(self, plist_chunk):
+        for tab_state in plist_chunk["TabStates"]:
+            if "TabURL" in tab_state:
+                self._output_file.write("\tTab URL  : {0}\r\n".format(tab_state["TabURL"]))
+            if "TabTitle" in tab_state:
+                self._output_file.write("\tTab Title: {0}\r\n".format(tab_state["TabTitle"]))
+            self._output_file.write("\r\n")
+
 
 class Parse02():
     """
@@ -125,13 +129,16 @@ class Parse02():
                 for session_window in self._data_file["SessionWindows"]:
                     if "TabStates" in session_window:
                         self._output_file.write("Tabs:\r\n")
-                        for tab_state in session_window["TabStates"]:
-                            if "BackForwardList" in tab_state:
-                                for back_forward_list in tab_state["BackForwardList"]:
-                                    if "URL" in back_forward_list:
-                                        self._output_file.write("\tTab URL  : {0}\r\n".format(back_forward_list["URL"]))
-                                    if "Title" in back_forward_list:
-                                        self._output_file.write("\tTab Title: {0}\r\n".format(back_forward_list["Title"]))
-                            self._output_file.write("\r\n")
+                        self._parse_tab_state(session_window)
         except KeyError:
             pass
+
+    def _parse_tab_state(self, plist_chunk):
+        for tab_state in plist_chunk["TabStates"]:
+            if "BackForwardList" in tab_state:
+                for back_forward_list in tab_state["BackForwardList"]:
+                    if "URL" in back_forward_list:
+                        self._output_file.write("\tTab URL  : {0}\r\n".format(back_forward_list["URL"]))
+                    if "Title" in back_forward_list:
+                        self._output_file.write("\tTab Title: {0}\r\n".format(back_forward_list["Title"]))
+            self._output_file.write("\r\n")
