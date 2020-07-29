@@ -58,8 +58,8 @@ class SystemAccountsPlist(Plugin):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    self._output_file.write("="*10 + " " + output_file + " " + "="*10 + "\r\n")
-                    self._output_file.write("Source File: {0}\r\n\r\n".format(file))
+                    output_file.write("{0} {1} {0}\r\n".format("="*10, output_file))
+                    output_file.write("Source File: {0}\r\n\r\n".format(file))
                     parse_os = Parse01(output_file, plist)
                     parse_os.parse()
                 else:
@@ -71,7 +71,8 @@ class SystemAccountsPlist(Plugin):
                     try:
                         # Snow Leopard uses plain plists
                         plist = plistlib.load(plist_to_load)
-                        output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+                        # output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
+                        output_file.write("{0} {1} {0}\r\n".format("="*10, output_file))
                         output_file.write("Source File: {0}\r\n\r\n".format(file))
                         parse_os = Parse02(output_file, plist)
                         parse_os.parse()

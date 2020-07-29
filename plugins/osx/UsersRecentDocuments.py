@@ -73,7 +73,7 @@ class UsersRecentDocuments(Plugin):
                     if "$objects" in plist:
                         for item in plist["$objects"]:
                             # if type(item) == str:
-                            if isinstance(item) == str:
+                            if isinstance(item, str):
                                 if "file://" in item:
                                     output_file.write("\t{0}\r\n".format(item))
                     output_file.write("\r\n")

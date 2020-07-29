@@ -39,6 +39,7 @@ class UsersMozillaFirefoxPlaces(Plugin):
             logging.warning("%s does not exist.", users_path)
             print("[WARNING] {0} does not exist.".format(users_path))
         for username in user_list:
+            profile_search_path = "None"
             if os.path.isdir(os.path.join(users_path, username)) and not username == "Shared":
                 profile_search_path = os.path.join(users_path, username, "Library", "Application Support", "Firefox", "Profiles")
             if os.path.isdir(profile_search_path):

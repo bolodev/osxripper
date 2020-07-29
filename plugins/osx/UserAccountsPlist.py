@@ -81,7 +81,7 @@ class Parse01():
         try:
             name = None
             if "home" in plist and "/Users" in plist["home"][0]:  # Only /Users
-                self._output_file.write("="*10 + " User Accounts " + "="*10 + "\r\n")
+                self._output_file.write("{0} {1} {0}\r\n".format("="*10, "User Accounts"))
                 self._output_file.write("Source File: {0}\r\n\r\n".format(self._data_file))
                 if "name" in plist:
                     self._output_file.write("Name          : {0}\r\n".format(plist["name"][0]))
@@ -105,12 +105,12 @@ class Parse01():
                 if "picture" in plist:
                     self._output_file.write("Picture       : {0}\r\n".format(plist["picture"][0]))
                 if "jpegphoto" in plist and name is not None:
-                    output_dir = os.path.dirname(self._output_file)
+                    output_dir = os.path.dirname(self._output_file.name)
                     jpeg = os.path.join(output_dir, "UserAccounts-" + name + "-jpgphoto.jpg")
                     with open(jpeg, "wb") as jpeg_output_file:
                         jpeg_output_file.write(plist["jpegphoto"][0])
                         jpeg_output_file.close()
-                        jpeg_output_file.write("Logon Picture : {0}\r\n".format(jpeg))
+                        self._output_file.write("Logon Picture : {0}\r\n".format(jpeg))
             else:
                 return
         except KeyError:
@@ -159,12 +159,12 @@ class Parse02():
                 if "picture" in plist:
                     self._output_file.write("Picture       : {0}\r\n".format(plist["picture"][0]))
                 if "jpegphoto" in plist and name is not None:
-                    output_dir = os.path.dirname(self._output_file)
+                    output_dir = os.path.dirname(self._output_file.name)
                     jpeg = os.path.join(output_dir, "UserAccounts-" + name + "-jpgphoto.jpg")
                     with open(jpeg, "wb") as jpeg_output_file:
                         jpeg_output_file.write(plist["jpegphoto"][0])
                         jpeg_output_file.close()
-                        jpeg_output_file.write("Logon Picture : {0}\r\n".format(jpeg))
+                        self._output_file.write("Logon Picture : {0}\r\n".format(jpeg))
             else:
                 return
         except KeyError:
