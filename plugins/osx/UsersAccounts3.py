@@ -60,6 +60,7 @@ class UsersAccounts3(Plugin):
                 parse_os.parse()
             elif self._os_version in ["mavericks", "mountain_lion"]:
                 parse_os = Parse02(output_file, file)
+                parse_os.parse()
             # elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "lion", "snow_leopard"]:
             elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported by this plugin.")
