@@ -1,7 +1,7 @@
 # OSXRipper
 OSXRipper is a tool to gather system and user information from OSX file systems. Currently it is supporting OSX versions 10.6 - 10.15 (Snow Leopard to Catalina).
 
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/exceljs/exceljs.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/bolodev/osxripper/context:python)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/javascript/g/exceljs/exceljs.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/bolodev/osxripper/context:python)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/exceljs/exceljs.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/bolodev/osxripper/alerts/)
 
 #### Alternatives to OSXRipper
