@@ -54,8 +54,8 @@ class UsersSafariWebBookmarks(Plugin):
         with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Safari_Web_Bookmarks.txt"), "a", encoding="utf-8") as output_file:
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source Directory: {0}\r\n\r\n".format(file))
-            # if self.set_os_version in ["big_sur", "catalina", "mojave"]:
-            if self.set_os_version in ["catalina", "mojave"]:
+            if self.set_os_version in ["big_sur", "catalina", "mojave"]:
+            # if self.set_os_version in ["catalina", "mojave"]:
                 # Does not exist
                 pass
             elif self.set_os_version in ["high_sierra"]:

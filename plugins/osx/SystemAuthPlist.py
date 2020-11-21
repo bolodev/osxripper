@@ -46,9 +46,10 @@ class SystemAuthPlist(Plugin):
                     output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
                     print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
 
-            # elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
-            elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
+            elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
                                       "yosemite", "mavericks"]:
+            # elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
+            #                           "yosemite", "mavericks"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

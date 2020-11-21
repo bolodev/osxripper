@@ -46,8 +46,8 @@ class TimeMachinePlist(Plugin):
                 output_file.close()
                 return
 
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 parse_os = Parse01(output_file, plist)
                 parse_os.parse()
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:

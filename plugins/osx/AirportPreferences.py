@@ -45,8 +45,8 @@ class AirportPreferences(Plugin):
                 output_file.close()
                 return
 
-            # if self._os_version in ["big_sur", "catalina"]:
-            if self._os_version in ["catalina"]:
+            if self._os_version in ["big_sur", "catalina"]:
+            # if self._os_version in ["catalina"]:
                 parse_macos = Parse01(output_file, plist)
                 parse_macos.parse()
             elif self._os_version in ["mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:

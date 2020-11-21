@@ -42,8 +42,8 @@ class SystemTime(Plugin):
         /private/etc/ntp.conf
         /Library/Preferences/com.apple.timezone.auto.plist
         """
-        # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra"]:
-        if self._os_version in ["catalina", "mojave", "high_sierra", "sierra"]:
+        if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra"]:
+        # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra"]:
             # global_plist = os.path.join(self._input_dir, "Library", "Preferences", ".GlobalPreferences.plist")
             auto_tz_plist = os.path.join(self._input_dir, "Library", "Caches", "com.apple.AutoTimeZone.plist")
             tz_auto_plist = os.path.join(self._input_dir, "Library", "Preferences", "com.apple.timezone.auto.plist")

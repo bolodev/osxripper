@@ -32,8 +32,8 @@ class LibraryStatus(Plugin):
         """
         with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
-            # if self._os_version in ["big_sur", "catalina"]:
-            if self._os_version in ["catalina"]:
+            if self._os_version in ["big_sur", "catalina"]:
+            # if self._os_version in ["catalina"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

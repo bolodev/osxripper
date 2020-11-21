@@ -53,9 +53,10 @@ class UsersSafariTopSites(Plugin):
         with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Safari_Top_Sites.txt"), "a", encoding="utf-8") as output_file:
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion", "snow_leopard"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)

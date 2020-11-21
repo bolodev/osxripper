@@ -66,9 +66,10 @@ class SystemSnapshots(Plugin):
                     output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
                     print("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(file))
 
-            # elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra",
-            elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra",
+            elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra",
                                       "mountain_lion", "lion", "snow_leopard"]:
+            # elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra",
+            #                           "mountain_lion", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

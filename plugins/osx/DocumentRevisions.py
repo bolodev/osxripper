@@ -36,8 +36,8 @@ class DocumentRevisions(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             file = os.path.join(self._input_dir, ".DocumentRevisions-V100", "db-V1", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(file))
-            # if self._os_version in ["big_sur", "catalina"]:
-            if self._os_version == "catalina":
+            if self._os_version in ["big_sur", "catalina"]:
+            # if self._os_version == "catalina":
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

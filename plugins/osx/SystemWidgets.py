@@ -35,8 +35,8 @@ class SystemWidgets(Plugin):
             working_dir = os.path.join(self._input_dir, "Library", "Widgets")
             output_file.write("Source Directory: {0}\r\n\r\n".format(working_dir))
             # No widgets in Catalina
-            # if self._os_version in ["big_sur", "catalina"]:
-            if self._os_version in ["catalina"]:
+            if self._os_version in ["big_sur", "catalina"]:
+            # if self._os_version in ["catalina"]:
                 logging.info("This version of OSX is not supported this plugin.")
                 print("[INFO] This version of OSX is not supported this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported this plugin.\r\n")

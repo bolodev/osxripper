@@ -46,8 +46,8 @@ class BluetoothPlist(Plugin):
                 output_file.close()
                 return
 
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
                 parse_mac = Parse01(output_file, plist)
                 parse_mac.parse()
             elif self._os_version == "mavericks":

@@ -34,9 +34,10 @@ class SystemGlobalPreferences(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             global_plist = os.path.join(self._input_dir, "Library", "Preferences", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(global_plist))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            #                         "mavericks", "mountain_lion", "lion"]:
                 if os.path.isfile(global_plist):
                     bplist = open(global_plist, "rb")
                     plist = riplib.ccl_bplist.load(bplist)

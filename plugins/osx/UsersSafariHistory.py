@@ -41,8 +41,8 @@ class UsersSafariHistory(Plugin):
                 if os.path.isdir(os.path.join(users_path, username)) and not username == "Shared":
                     history_path = os.path.join(users_path, username, "Library", "Safari")
                     if os.path.isdir(history_path):
-                        # if self._os_version in ["big_sur", "catalina"]:
-                        if self._os_version in ["catalina"]:
+                        if self._os_version in ["big_sur", "catalina"]:
+                        # if self._os_version in ["catalina"]:
                             self._parse_sqlite_db2(history_path, username)
                         if self._os_version in ["mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
                             self.__parse_sqlite_db(history_path, username)

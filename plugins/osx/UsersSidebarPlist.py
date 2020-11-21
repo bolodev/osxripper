@@ -53,8 +53,8 @@ class UsersSidebarPlist(Plugin):
         with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_SidebarList.txt"), "a", encoding="utf-8") as output_file:
             output_file.write("=" * 10 + " " + self._name + " " + "=" * 10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
-            # if self.set_os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-            if self.set_os_version in ["catalina", "mojave", "high_sierra"]:
+            if self.set_os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
+            # if self.set_os_version in ["catalina", "mojave", "high_sierra"]:
                 logging.warning("File: com.apple.sidebarlists.plist not in this version.")
                 output_file.write("[INFO] File: com.apple.sidebarlists.plist not in this version.\r\n")
                 print("[INFO] File: com.apple.sidebarlists.plist not in this version.")

@@ -43,8 +43,8 @@ class InstallHistory(Plugin):
                 logging.warning("File: %s does not exist or cannot be found.\r\n", plist_file)
                 output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 parse_os = Parse01(output_file, plist)
                 parse_os.parse()
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:

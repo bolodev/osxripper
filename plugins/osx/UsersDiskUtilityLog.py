@@ -56,8 +56,8 @@ class UsersDiskUtilityLog(Plugin):
                         if "**" not in line and len(line) != 0:
                             output_file.write(line.replace("\n", "\r\n"))
                 du_log.close()
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

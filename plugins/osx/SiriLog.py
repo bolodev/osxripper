@@ -38,8 +38,8 @@ class SiriLog(Plugin):
             output_file.write("=" * 10 + " " + self._name + " " + "=" * 10 + "\r\n")
             log_file = os.path.join(self._input_dir, "private", "var", "db", "diagnostics", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(log_file))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra"]:
                 if os.path.isfile(log_file):
                     with open(log_file, "r") as lf_handle:
                         for log_line in lf_handle:

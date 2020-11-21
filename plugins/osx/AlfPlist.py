@@ -43,10 +43,10 @@ class AlfPlist(Plugin):
                 output_file.close()
                 return
 
-            #if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                        "mavericks"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-                                    "mavericks"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+                                   "mavericks"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            #                         "mavericks"]:
                 parse_osx = Parse01(output_file, plist)
                 parse_osx.parse()
             elif self._os_version in ["mountain_lion", "lion"]:

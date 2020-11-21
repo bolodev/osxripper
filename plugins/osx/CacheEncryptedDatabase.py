@@ -46,8 +46,8 @@ class CacheEncryptedDatabase(Plugin):
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(self._data_file))
                 return
 
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
                 for database_file in file_list:
                     if os.path.isfile(database_file):
                         output_file.write("Source Database: {0}\r\n\r\n".format(database_file))

@@ -49,9 +49,10 @@ class UserAccountsPlist(Plugin):
         Parse a User Account Binary Plist files
         """
         with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
+                                    # "mavericks", "mountain_lion", "lion"]:
                 parse_os = Parse01(output_file, file)
                 parse_os.parse()
             elif self._os_version == "snow_leopard":

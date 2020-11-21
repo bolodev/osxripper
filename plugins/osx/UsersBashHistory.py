@@ -37,8 +37,8 @@ class UsersBashHistory(Plugin):
             print("[WARNING] {0} does not exist.".format(users_path))
             return
         for username in user_list:
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
                 if os.path.isdir(users_path):
                     # user_list = os.listdir(users_path)
                     if os.path.isdir(os.path.join(users_path, username)) and not username == "Shared":

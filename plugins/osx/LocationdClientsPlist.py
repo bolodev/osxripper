@@ -38,9 +38,10 @@ class LocationdClientsPlist(Plugin):
             file = os.path.join(self._input_dir, "private", "var", "db", "locationd", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if os.path.isfile(file):
-                # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
-                if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
+                if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
                                         "yosemite", "mavericks"]:
+                # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
+                #                         "yosemite", "mavericks"]:
                     try:
                         bplist = open(file, "rb")
                         plist = riplib.ccl_bplist.load(bplist)

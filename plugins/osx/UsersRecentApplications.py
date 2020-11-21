@@ -54,8 +54,8 @@ class UsersRecentApplications(Plugin):
         with codecs.open(os.path.join(self._output_dir, "Users_" + username + self._output_file), "a", encoding="utf-8") as output_file:
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
-            # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-            if self._os_version in ["catalina", "mojave", "high_sierra"]:
+            if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
+            # if self._os_version in ["catalina", "mojave", "high_sierra"]:
                 # Uses .sfl2 files
                 pass
             elif self._os_version in ["sierra", "el_capitan"]:
