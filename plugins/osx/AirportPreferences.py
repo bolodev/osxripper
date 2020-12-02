@@ -1,4 +1,4 @@
-""" Moduule to parse Airport data """
+""" Module to parse Airport data """
 import codecs
 import logging
 import os
