@@ -41,30 +41,24 @@ class SystemTime(Plugin):
         /private/etc/localtime
         /private/etc/ntp.conf
         /Library/Preferences/com.apple.timezone.auto.plist
+        In later OS versions, the above file is /private/var/db/timed/Library/Preferences/com.apple.timed.plist
         """
-        if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra"]:
-        # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra"]:
-            # global_plist = os.path.join(self._input_dir, "Library", "Preferences", ".GlobalPreferences.plist")
-            auto_tz_plist = os.path.join(self._input_dir, "Library", "Caches", "com.apple.AutoTimeZone.plist")
-            tz_auto_plist = os.path.join(self._input_dir, "Library", "Preferences", "com.apple.timezone.auto.plist")
+        if self._os_version in ["big_sur", "catalina"]:
+            global_plist = os.path.join(self._input_dir, "Library", "Preferences", ".GlobalPreferences.plist")
+            time_settings_plist = os.path.join(self._input_dir, "private", "var", "db", "timed", "Library", "Preferences", "com.apple.timed.plist")
             ntp_conf = os.path.join(self._input_dir, "private", "etc", "ntp.conf")
-            # if os.path.isfile(global_plist):
-            #     self.__parse_sierra_global_plist(global_plist)
-            # else:
-            #     logging.warning("File {0} does not exist.".format(global_plist))
-            #     print("[WARNING] File {0} does not exist.".format(global_plist))
-
-            if os.path.isfile(auto_tz_plist):
-                self.__parse_auto_timezone_plist(auto_tz_plist)
+            
+            if os.path.isfile(global_plist):
+                self.__parse_sierra_global_plist(global_plist)
             else:
-                logging.warning("File %s does not exist.", auto_tz_plist)
-                print("[WARNING] File {0} does not exist.".format(auto_tz_plist))
+                logging.warning("File {0} does not exist.".format(global_plist))
+                print("[WARNING] File {0} does not exist.".format(global_plist))
 
-            if os.path.isfile(tz_auto_plist):
-                self.__parse_timezone_auto_plist(tz_auto_plist)
+            if os.path.isfile(time_settings_plist):
+                self.__parse_catalina_auto_time_settings_plist(time_settings_plist)
             else:
-                logging.warning("File %s does not exist.", tz_auto_plist)
-                print("[WARNING] File {0} does not exist.".format(tz_auto_plist))
+                logging.warning("File %s does not exist.", time_settings_plist)
+                print("[WARNING] File {0} does not exist.".format(time_settings_plist))
 
             if os.path.isfile(ntp_conf):
                 self.__read_ntp(ntp_conf)
@@ -72,7 +66,7 @@ class SystemTime(Plugin):
                 logging.warning("File %s does not exist.", ntp_conf)
                 print("[WARNING] File {0} does not exist.".format(ntp_conf))
 
-        elif self._os_version in ["el_capitan", "yosemite", "mavericks"]:
+        elif self._os_version in ["mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks"]:
             global_plist = os.path.join(self._input_dir, "Library", "Preferences", ".GlobalPreferences.plist")
             auto_tz_plist = os.path.join(self._input_dir, "Library", "Caches", "com.apple.AutoTimeZone.plist")
             tz_auto_plist = os.path.join(self._input_dir, "Library", "Preferences", "com.apple.timezone.auto.plist")
@@ -140,29 +134,29 @@ class SystemTime(Plugin):
             output_file.write("=" * 40 + "\r\n\r\n")
         output_file.close()
 
-    # def __parse_sierra_global_plist(self, file):
-    #     """
-    #     Parse a Binary Plist file
-    #     """
-    #     with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
-    #         output_file.write("=" * 10 + " Local Time Zone " + "=" * 10 + "\r\n")
-    #         output_file.write("Source File: {0}\r\n\r\n".format(file))
-    #         bplist = open(file, "rb")
-    #         xml = ccl_bplist.load(bplist)
-    #         bplist.close()
-    #         if "com.apple.preferences.timezone.selected_city" in xml:
-    #             # output_file.write("Country       : {0}\r\n"
-    #             #          .format(xml["com.apple.preferences.timezone.selected_city"]["CountryCode"]))
-    #             output_file.write("Time Zone     : {0}\r\n"
-    #                      .format(xml["com.apple.preferences.timezone.selected_city"]["TimeZoneName"]))
-    #             output_file.write("Selected City : {0}\r\n"
-    #                      .format(xml["com.apple.preferences.timezone.selected_city"]["Name"]))
-    #             output_file.write("Latitude      : {0}\r\n"
-    #                      .format(xml["com.apple.preferences.timezone.selected_city"]["Latitude"]))
-    #             output_file.write("Longitude     : {0}\r\n"
-    #                      .format(xml["com.apple.preferences.timezone.selected_city"]["Longitude"]))
-    #         output_file.write("=" * 40 + "\r\n\r\n")
-    #     output_file.close()
+    def __parse_sierra_global_plist(self, file):
+        """
+        Parse a Binary Plist file
+        """
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("=" * 10 + " Local Time Zone " + "=" * 10 + "\r\n")
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
+            bplist = open(file, "rb")
+            xml = riplib.ccl_bplist.load(bplist)
+            bplist.close()
+            if "com.apple.TimeZonePref.Last_Selected_City" in xml:
+                output_file.write("Country       : {0}\r\n"
+                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][4]))
+                output_file.write("Time Zone     : {0}\r\n"
+                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][3]))
+                output_file.write("Selected City : {0}\r\n"
+                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][5]))
+                output_file.write("Latitude      : {0}\r\n"
+                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][0]))
+                output_file.write("Longitude     : {0}\r\n"
+                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][1]))
+            output_file.write("=" * 40 + "\r\n\r\n")
+        output_file.close()
 
     def __read_ntp(self, file):
         with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
@@ -226,3 +220,22 @@ class SystemTime(Plugin):
                 auto_tz_file.close()
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
+        
+    def __parse_catalina_auto_time_settings_plist(self, file):
+        """
+        Parse a binary Plist file
+        """
+        with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
+            output_file.write("="*8 + " Automatic Time Settings " + "="*8 + "\r\n")
+            output_file.write("Source File: {0}\r\n\r\n".format(file))
+            bplist = open(file, "rb")
+            xml = riplib.ccl_bplist.load(bplist)
+            bplist.close()
+            if "TMAutomaticTimeZoneEnabled" in xml:
+                output_file.write("Auto Time Zone Set: {0}\r\n".format(xml["TMAutomaticTimeZoneEnabled"]))
+                
+            if "TMAutomaticTimeOnlyEnabled" in xml:
+                output_file.write("Auto Time Set: {0}\r\n".format(xml["TMAutomaticTimeOnlyEnabled"]))
+            output_file.write("="*40 + "\r\n\r\n")
+        output_file.close()
+
