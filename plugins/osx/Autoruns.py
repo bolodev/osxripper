@@ -31,8 +31,6 @@ class Autoruns(Plugin):
         with codecs.open(os.path.join(self._output_dir, self._output_file), "a", encoding="utf-8") as output_file:
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion", "snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 sys_lib_launch_agents = os.path.join(self._input_dir, "System", "Library", "LaunchAgents")
                 sys_lib_launch_daemons = os.path.join(self._input_dir, "System", "Library", "LaunchDaemons")
                 sys_lib_startup_items = os.path.join(self._input_dir, "System", "Library", "StartupItems")

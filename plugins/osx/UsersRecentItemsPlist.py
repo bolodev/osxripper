@@ -37,7 +37,6 @@ class UsersRecentItemsPlist(Plugin):
             for username in user_list:
                 if os.path.isdir(os.path.join(users_path, username)) and not username == "Shared":
                     # if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-                    # if self._os_version in ["catalina", "mojave", "high_sierra"]:
                     #     # File does not exist in these versions
                     #     return
                     # elif self._os_version in ["sierra", "el_capitan"]:
@@ -69,7 +68,7 @@ class UsersRecentItemsPlist(Plugin):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse01(output_file, plist)
+                    parse_os = ParseVers10131011(output_file, plist)
                     parse_os.parse()
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
@@ -77,7 +76,7 @@ class UsersRecentItemsPlist(Plugin):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse02(output_file, plist)
+                    parse_os = ParseVers1010106(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", file)
@@ -89,7 +88,7 @@ class UsersRecentItemsPlist(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers10131011():
     """
     Convenience class for parsing macOS data
     """
@@ -110,7 +109,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers1010106():
     """
     Convenience class for parsing macOS data
     """

@@ -44,16 +44,14 @@ class AlfPlist(Plugin):
                 return
 
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-                                   "mavericks"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks"]:
-                parse_osx = Parse01(output_file, plist)
+                                    "mavericks"]:
+                parse_osx = ParseVer11109(output_file, plist)
                 parse_osx.parse()
             elif self._os_version in ["mountain_lion", "lion"]:
-                parse_osx = Parse02(output_file, plist)
+                parse_osx = ParseVers108107(output_file, plist)
                 parse_osx.parse()
             elif self._os_version == "snow_leopard":
-                parse_osx = Parse03(output_file, plist)
+                parse_osx = ParseVers106(output_file, plist)
                 parse_osx.parse()
             else:
                 logging.warning("Not a known OSX version.")
@@ -62,7 +60,7 @@ class AlfPlist(Plugin):
         output_file.close()
 
 
-class Parse01():
+class ParseVer11109():
     """
     Convenience class for parsing macOS data
     """
@@ -113,7 +111,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers108107():
     """
     Convenience class for parsing macOS data
     """
@@ -167,7 +165,7 @@ class Parse02():
         except KeyError:
             pass
 
-class Parse03():
+class ParseVers106():
     """
     Convenience class for parsing macOS data
     """

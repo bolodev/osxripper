@@ -56,13 +56,12 @@ class UsersAccounts3(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["el_capitan", "yosemite"]:
-                parse_os = Parse01(output_file, file)
+                parse_os = ParseVers10111010(output_file, file)
                 parse_os.parse()
             elif self._os_version in ["mavericks", "mountain_lion"]:
-                parse_os = Parse02(output_file, file)
+                parse_os = ParseVers110106(output_file, file)
                 parse_os.parse()
             elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "lion", "snow_leopard"]:
-            # elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "lion", "snow_leopard"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
@@ -72,7 +71,7 @@ class UsersAccounts3(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers10111010():
     """
     Convenience class for parsing macOS data
     """
@@ -116,7 +115,7 @@ class Parse01():
             if conn:
                 conn.close()
 
-class Parse02():
+class ParseVers110106():
     """
     Convenience class for parsing macOS data
     """

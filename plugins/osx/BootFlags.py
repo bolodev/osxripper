@@ -35,8 +35,6 @@ class BootFlags(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks",
                                     "mountain_lion", "lion", "snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks",
-            #                         "mountain_lion", "lion", "snow_leopard"]:
                 plist_file = os.path.join(self._input_dir, "Library", "Preferences", "SystemConfiguration",
                                           self._data_file)
                 output_file.write("Source File: {0}\r\n\r\n".format(plist_file))

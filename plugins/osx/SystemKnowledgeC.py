@@ -60,7 +60,6 @@ class SystemKnowledgeC(Plugin):
             file = os.path.join(self._input_dir, "private", "var", "db", "CoreDuet", "Knowledge", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra"]:
                 if os.path.isfile(file):
                     conn = None
                     try:

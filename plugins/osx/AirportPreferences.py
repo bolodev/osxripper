@@ -46,20 +46,19 @@ class AirportPreferences(Plugin):
                 return
 
             if self._os_version in ["big_sur", "catalina"]:
-            # if self._os_version in ["catalina"]:
-                parse_macos = Parse01(output_file, plist)
+                parse_macos = ParseVers1101015(output_file, plist)
                 parse_macos.parse()
             elif self._os_version in ["mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-                parse_macos = Parse02(output_file, plist)
+                parse_macos = ParseVers10141010(output_file, plist)
                 parse_macos.parse()
             elif self._os_version == "mavericks":
-                parse_macos = Parse03(output_file, plist)
+                parse_macos = ParseVers109(output_file, plist)
                 parse_macos.parse()
             elif self._os_version in ["mountain_lion", "lion"]:
-                parse_macos = Parse04(output_file, plist)
+                parse_macos = ParseVers108107(output_file, plist)
                 parse_macos.parse()
             elif self._os_version == "snow_leopard":
-                parse_macos = Parse05(output_file, plist)
+                parse_macos = ParseVers106(output_file, plist)
                 parse_macos.parse()
             else:
                 logging.warning("[WARNING] Not a known OSX version.")
@@ -67,7 +66,7 @@ class AirportPreferences(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers1101015():
     """
     Convenience class for parsing macOS data
     """
@@ -145,7 +144,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers10141010():
     """
     Convenience class for parsing macOS data
     """
@@ -210,7 +209,7 @@ class Parse02():
         except KeyError:
             pass
 
-class Parse03():
+class ParseVers109():
     """
     Convenience class for parsing macOS data
     """
@@ -259,7 +258,7 @@ class Parse03():
         except KeyError:
             pass
 
-class Parse04():
+class ParseVers108107():
     """
     Convenience class for parsing macOS data
     """
@@ -308,7 +307,7 @@ class Parse04():
         except KeyError:
             pass
 
-class Parse05():
+class ParseVers106():
     """
     Convenience class for parsing macOS data
     """

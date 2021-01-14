@@ -37,7 +37,6 @@ class UsersKnowledgeC(Plugin):
             for username in user_list:
                 with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_KnowledgeC.txt"), "a", encoding="utf-8") as output_file:
                     if self._os_version in ["big_sur", "catalina"]:
-                    # if self._os_version in ["catalina"]:
                         logging.info("This version of OSX is not supported by this plugin.")
                         print("[INFO] This version of OSX is not supported by this plugin.")
                         output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")

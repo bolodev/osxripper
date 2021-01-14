@@ -36,9 +36,7 @@ class DeletedUsersPlist(Plugin):
             file = os.path.join(self._input_dir, "Library", "Preferences", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-                                    "mavericks", "mountain_lion", "lion","snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
+                                    "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     bplist = open(file, "rb")
                     plist_to_load = riplib.ccl_bplist.load(bplist)

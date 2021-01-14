@@ -34,8 +34,6 @@ class Playlists(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion"]:
                 working_dir = os.path.join(self._input_dir, "private", "var", "db", "BootCaches")
                 output_file.write("Source Directory: {0}\r\n\r\n".format(working_dir))
                 if os.path.isdir(working_dir):

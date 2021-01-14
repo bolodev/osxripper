@@ -44,11 +44,10 @@ class InstallHistory(Plugin):
                 output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(plist_file))
                 print("[WARNING] File: {0} does not exist or cannot be found.".format(plist_file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-                parse_os = Parse01(output_file, plist)
+                parse_os = ParseVers1101011(output_file, plist)
                 parse_os.parse()
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:
-                parse_os = Parse02(output_file, plist)
+                parse_os = ParseVers1010106(output_file, plist)
                 parse_os.parse()
             else:
                 logging.warning("Not a known OSX version.")
@@ -56,7 +55,7 @@ class InstallHistory(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers1101011():
     """
     Convenience class for parsing macOS data
     """
@@ -86,7 +85,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers1010106():
     """
     Convenience class for parsing macOS data
     """

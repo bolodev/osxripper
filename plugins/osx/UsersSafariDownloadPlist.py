@@ -55,7 +55,6 @@ class UsersSafariDownloadPlist(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave"]:
-            # if self._os_version in ["catalina", "mojave"]:
                 # Does not exist
                 pass
             elif self._os_version in ["high_sierra", "sierra", "el_capitan", "yosemite"]:
@@ -63,7 +62,7 @@ class UsersSafariDownloadPlist(Plugin):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse01(output_file, plist)
+                    parse_os = ParseVers10131010(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.", file)
@@ -75,7 +74,7 @@ class UsersSafariDownloadPlist(Plugin):
                     bplist = open(file, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse02(output_file, plist)
+                    parse_os = ParseVers109107(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.", file)
@@ -86,7 +85,7 @@ class UsersSafariDownloadPlist(Plugin):
                     with open(file, "rb") as plist_to_load:
                         plist = plistlib.load(plist_to_load)
                         plist_to_load.close()
-                        parse_os = Parse03(output_file, plist)
+                        parse_os = ParseVer106(output_file, plist)
                         parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", file)
@@ -98,7 +97,7 @@ class UsersSafariDownloadPlist(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers10131010():
     """
     Convenience class for parsing macOS data
     """
@@ -126,7 +125,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers109107():
     """
     Convenience class for parsing macOS data
     """
@@ -151,7 +150,7 @@ class Parse02():
         except KeyError:
             pass
 
-class Parse03():
+class ParseVer106():
     """
     Convenience class for parsing macOS data
     """

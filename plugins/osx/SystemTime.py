@@ -47,7 +47,7 @@ class SystemTime(Plugin):
             global_plist = os.path.join(self._input_dir, "Library", "Preferences", ".GlobalPreferences.plist")
             time_settings_plist = os.path.join(self._input_dir, "private", "var", "db", "timed", "Library", "Preferences", "com.apple.timed.plist")
             ntp_conf = os.path.join(self._input_dir, "private", "etc", "ntp.conf")
-            
+
             if os.path.isfile(global_plist):
                 self.__parse_sierra_global_plist(global_plist)
             else:
@@ -146,15 +146,15 @@ class SystemTime(Plugin):
             bplist.close()
             if "com.apple.TimeZonePref.Last_Selected_City" in xml:
                 output_file.write("Country       : {0}\r\n"
-                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][4]))
+                                  .format(xml["com.apple.TimeZonePref.Last_Selected_City"][4]))
                 output_file.write("Time Zone     : {0}\r\n"
-                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][3]))
+                                  .format(xml["com.apple.TimeZonePref.Last_Selected_City"][3]))
                 output_file.write("Selected City : {0}\r\n"
-                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][5]))
+                                  .format(xml["com.apple.TimeZonePref.Last_Selected_City"][5]))
                 output_file.write("Latitude      : {0}\r\n"
-                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][0]))
+                                  .format(xml["com.apple.TimeZonePref.Last_Selected_City"][0]))
                 output_file.write("Longitude     : {0}\r\n"
-                         .format(xml["com.apple.TimeZonePref.Last_Selected_City"][1]))
+                                  .format(xml["com.apple.TimeZonePref.Last_Selected_City"][1]))
             output_file.write("=" * 40 + "\r\n\r\n")
         output_file.close()
 
@@ -220,7 +220,7 @@ class SystemTime(Plugin):
                 auto_tz_file.close()
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
-        
+
     def __parse_catalina_auto_time_settings_plist(self, file):
         """
         Parse a binary Plist file
@@ -233,9 +233,8 @@ class SystemTime(Plugin):
             bplist.close()
             if "TMAutomaticTimeZoneEnabled" in xml:
                 output_file.write("Auto Time Zone Set: {0}\r\n".format(xml["TMAutomaticTimeZoneEnabled"]))
-                
+
             if "TMAutomaticTimeOnlyEnabled" in xml:
                 output_file.write("Auto Time Set: {0}\r\n".format(xml["TMAutomaticTimeOnlyEnabled"]))
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
-

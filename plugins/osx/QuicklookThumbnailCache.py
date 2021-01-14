@@ -37,7 +37,6 @@ class QuicklookThumbnailCache(Plugin):
             start_folder = os.path.join(self._input_dir, "private", "var", "folders")
             file_list = []
             if self._os_version in ["big_sur", "catalina"]:
-            # if self._os_version in ["catalina"]:
                 # Change to database schema with embedded bplists (NSKeyedArchiver)
                 logging.warning("Database in Catalina has changed to use embedded bplists (NSKeyedArchiver)\r\n")
                 output_file.write("[WARNING] Database in Catalina has changed to use embedded bplists (NSKeyedArchiver)\r\n")

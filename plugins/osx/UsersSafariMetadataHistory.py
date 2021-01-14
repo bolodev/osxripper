@@ -55,7 +55,6 @@ class UsersSafariMetadataHistory(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source Directory: {0}\r\n\r\n".format(file))
             if self.set_os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-            # if self.set_os_version in ["catalina", "mojave", "high_sierra"]:
                 logging.warning("File: .tracked files not in this version.")
                 output_file.write("[INFO] File: .tracked files not in this version.\r\n")
                 print("[INFO] File: .tracked files not in this version.")

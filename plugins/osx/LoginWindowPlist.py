@@ -37,8 +37,6 @@ class LoginWindowPlist(Plugin):
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion", "snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     try:
                         bplist = open(file, "rb")

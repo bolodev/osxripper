@@ -47,20 +47,19 @@ class BluetoothPlist(Plugin):
                 return
 
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-                parse_mac = Parse01(output_file, plist)
+                parse_mac = ParseVers1101010(output_file, plist)
                 parse_mac.parse()
             elif self._os_version == "mavericks":
-                parse_mac = Parse02(output_file, plist)
+                parse_mac = ParseVers109(output_file, plist)
                 parse_mac.parse()
             elif self._os_version == "mountain_lion":
-                parse_mac = Parse03(output_file, plist)
+                parse_mac = ParseVers108(output_file, plist)
                 parse_mac.parse()
             elif self._os_version == "lion":
-                parse_mac = Parse04(output_file, plist)
+                parse_mac = ParseVers107(output_file, plist)
                 parse_mac.parse()
             elif self._os_version == "snow_leopard":
-                parse_mac = Parse05(output_file, plist)
+                parse_mac = ParseVers106(output_file, plist)
                 parse_mac.parse()
             else:
                 logging.warning("Not a known OSX version.")
@@ -69,7 +68,7 @@ class BluetoothPlist(Plugin):
         output_file.close()
 
 
-class Parse01():
+class ParseVers1101010():
     """
     Convenience class for parsing macOS data
     """
@@ -178,7 +177,7 @@ class Parse01():
             pass
         self._output_file.write("\r\n")
 
-class Parse02():
+class ParseVers109():
     """
     Convenience class for parsing macOS data
     """
@@ -246,7 +245,7 @@ class Parse02():
             pass
         self._output_file.write("\r\n")
 
-class Parse03():
+class ParseVers108():
     """
     Convenience class for parsing macOS data
     """
@@ -324,7 +323,7 @@ class Parse03():
             pass
         self._output_file.write("\r\n")
 
-class Parse04():
+class ParseVers107():
     """
     Convenience class for parsing macOS data
     """
@@ -401,7 +400,7 @@ class Parse04():
             pass
         self._output_file.write("\r\n")
 
-class Parse05():
+class ParseVers106():
     """
     Convenience class for parsing macOS data
     """

@@ -36,11 +36,10 @@ class WifiMessageTracer(Plugin):
             plist_file = os.path.join(self._input_dir, "Library", "Preferences", "SystemConfiguration", self._data_file)
             output_file.write("Source File: {0}\r\n\r\n".format(plist_file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite"]:
                 if os.path.isfile(plist_file):
                     with open(plist_file, "rb") as plist_to_load:
                         plist = plistlib.load(plist_to_load)
-                    parse_os = Parse01(output_file, plist)
+                    parse_os = ParseVers1101010(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", plist_file)
@@ -50,7 +49,7 @@ class WifiMessageTracer(Plugin):
                 if os.path.isfile(plist_file):
                     with open(plist_file, "rb") as plist_to_load:
                         plist = plistlib.load(plist_to_load)
-                    parse_os = Parse02(output_file, plist)
+                    parse_os = ParseVers109(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", plist_file)
@@ -66,7 +65,7 @@ class WifiMessageTracer(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers1101010():
     """
     Convenience class for parsing macOS data
     """
@@ -106,7 +105,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers109():
     """
     Convenience class for parsing macOS data
     """

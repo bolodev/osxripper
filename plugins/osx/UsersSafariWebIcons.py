@@ -54,7 +54,6 @@ class UsersSafariWebIcons(Plugin):
         with codecs.open(os.path.join(self._output_dir, "Users_" + username + "_Safari_Webpage_Icons.txt"), "a", encoding="utf-8") as output_file:
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra"]:
                 # Does not exist
                 pass
             elif self._os_version in ["sierra", "el_capitan", "yosemite", "mavericks", "mountain_lion", "lion", "snow_leopard"]:

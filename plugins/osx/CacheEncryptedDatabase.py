@@ -51,14 +51,14 @@ class CacheEncryptedDatabase(Plugin):
                 for database_file in file_list:
                     if os.path.isfile(database_file):
                         output_file.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        parse_os = Parse01(output_file, database_file)
+                        parse_os = ParseVers110109(output_file, database_file)
                         parse_os.parse()
 
             elif self._os_version == "mountain_lion":
                 for database_file in file_list:
                     if os.path.isfile(database_file):
                         output_file.write("Source Database: {0}\r\n\r\n".format(database_file))
-                        parse_os = Parse02(output_file, database_file)
+                        parse_os = ParseVers108(output_file, database_file)
                         parse_os.parse()
 
             elif self._os_version in ["lion", "snow_leopard"]:
@@ -70,7 +70,7 @@ class CacheEncryptedDatabase(Plugin):
                 print("[WARNING] Not a known OSX version.")
         output_file.close()
 
-class Parse01():
+class ParseVers110109():
     """
     Convenience class for parsing macOS data
     """
@@ -122,7 +122,7 @@ class Parse01():
                 conn.close()
         self._output_file.write("="*50 + "\r\n")
 
-class Parse02():
+class ParseVers108():
     """
     Convenience class for parsing macOS data
     """

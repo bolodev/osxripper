@@ -40,8 +40,6 @@ class LocationdClientsPlist(Plugin):
             if os.path.isfile(file):
                 if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
                                         "yosemite", "mavericks"]:
-                # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
-                #                         "yosemite", "mavericks"]:
                     try:
                         bplist = open(file, "rb")
                         plist = riplib.ccl_bplist.load(bplist)

@@ -54,14 +54,13 @@ class UsersLoginWindowPlist(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan"]:
-                parse_os = Parse01(output_file, file)
+                parse_os = ParseVers1101011(output_file, file)
                 parse_os.parse()
             elif self._os_version in ["yosemite", "mavericks", "mountain_lion"]:
-                parse_os = Parse02(output_file, file)
+                parse_os = Parseers1010108(output_file, file)
                 parse_os.parse()
             elif self._os_version == "lion":
-                parse_os = Parse03(output_file, file)
+                parse_os = ParseVers107(output_file, file)
                 parse_os.parse()
             elif self._os_version == "snow_leopard":
                 logging.info("This version of OSX is not supported by this plugin.")
@@ -73,7 +72,7 @@ class UsersLoginWindowPlist(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers1101011():
     """
     Convenience class for parsing macOS data
     """
@@ -99,7 +98,7 @@ class Parse01():
             self._output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
             print("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
 
-class Parse02():
+class Parseers1010108():
     """
     Convenience class for parsing macOS data
     """
@@ -127,7 +126,7 @@ class Parse02():
             self._output_file.write("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
             print("[WARNING] File: {0} does not exist or cannot be found.\r\n".format(self._data_file))
 
-class Parse03():
+class ParseVers107():
     """
     Convenience class for parsing macOS data
     """

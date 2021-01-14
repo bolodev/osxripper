@@ -66,8 +66,6 @@ class UsersDockPlist(Plugin):
 
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks",
                                     "mountain_lion", "lion", "snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite", "mavericks",
-            #                         "mountain_lion", "lion", "snow_leopard"]:
                 try:
                     if "trash-full" in plist:
                         output_file.write("Trash Full: {0}\r\n\r\n".format(plist["trash-full"]))

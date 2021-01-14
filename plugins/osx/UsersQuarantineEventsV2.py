@@ -60,8 +60,6 @@ class UsersQuarantineEventsV2(Plugin):
             output_file.write("="*10 + " " + self._name + " " + "="*10 + "\r\n")
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion"]:
                 query = "SELECT LSQuarantineEventIdentifier,LSQuarantineTimeStamp,LSQuarantineAgentBundleIdentifier," \
                         "LSQuarantineAgentName,LSQuarantineDataURLString,LSQuarantineSenderName," \
                         "LSQuarantineSenderAddress,LSQuarantineTypeNumber,LSQuarantineOriginTitle," \

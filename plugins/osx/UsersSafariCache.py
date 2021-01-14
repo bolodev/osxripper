@@ -66,7 +66,7 @@ class UsersSafariCache(Plugin):
             if self._os_version in ["high_sierra", "sierra", "el_capitan", "yosemite", "mavericks", "mountain_lion"]:
                 if os.path.isfile(file):
                     output_file.write("Source File: {0}\r\n\r\n".format(file))
-                    parse_os = Parse01(output_file, file)
+                    parse_os = ParseVers1013108(output_file, file)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", file)
@@ -76,7 +76,7 @@ class UsersSafariCache(Plugin):
             elif self._os_version in ["lion", "snow_leopard"]:
                 if os.path.isfile(file):
                     output_file.write("Source File: {0}\r\n\r\n".format(file))
-                    parse_os = Parse02(output_file, file)
+                    parse_os = ParseVers107106(output_file, file)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", file)
@@ -88,7 +88,7 @@ class UsersSafariCache(Plugin):
             output_file.write("=" * 40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers1013108():
     """
     Convenience class for parsing macOS data
     """
@@ -122,7 +122,7 @@ class Parse01():
             if conn:
                 conn.close()
 
-class Parse02():
+class ParseVers107106():
     """
     Convenience class for parsing macOS data
     """

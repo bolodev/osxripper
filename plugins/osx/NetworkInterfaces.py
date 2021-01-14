@@ -48,13 +48,11 @@ class NetworkInterfaces(Plugin):
 
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks"]:
-                parse_os = Parse01(output_file, plist)
+                parse_os = ParseVers110109(output_file, plist)
                 parse_os.parse()
 
             elif self._os_version in ["mountain_lion", "lion", "snow_leopard"]:
-                parse_os = Parse02(output_file, plist)
+                parse_os = ParseVers108106(output_file, plist)
                 parse_os.parse()
 
             else:
@@ -63,7 +61,7 @@ class NetworkInterfaces(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers110109():
     """
     Convenience class for parsing macOS data
     """
@@ -106,7 +104,7 @@ class Parse01():
         except KeyError:
             pass
 
-class Parse02():
+class ParseVers108106():
     """
     Convenience class for parsing macOS data
     """

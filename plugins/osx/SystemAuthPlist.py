@@ -39,7 +39,7 @@ class SystemAuthPlist(Plugin):
                 if os.path.isfile(plist_file):
                     with open(plist_file, "rb") as plist_to_load:
                         plist = plistlib.load(plist_to_load)
-                    parse_os = Parse01(output_file, plist)
+                    parse_os = ParseVers108106(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File: %s does not exist or cannot be found.\r\n", plist_file)
@@ -48,8 +48,6 @@ class SystemAuthPlist(Plugin):
 
             elif self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan",
                                       "yosemite", "mavericks"]:
-            # elif self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan",
-            #                           "yosemite", "mavericks"]:
                 logging.info("This version of OSX is not supported by this plugin.")
                 print("[INFO] This version of OSX is not supported by this plugin.")
                 output_file.write("[INFO] This version of OSX is not supported by this plugin.\r\n")
@@ -59,7 +57,7 @@ class SystemAuthPlist(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers108106():
     """
     Convenience class for parsing macOS data
     """

@@ -54,8 +54,6 @@ class UsersFsckHfsLog(Plugin):
             output_file.write("Source File: {0}\r\n\r\n".format(file))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion", "snow_leopard"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion", "snow_leopard"]:
                 with codecs.open(file, "r", encoding="utf-8") as fsck:
                     for line in fsck.readlines():
                         # fsck_hfs started

@@ -36,13 +36,11 @@ class SystemGlobalPreferences(Plugin):
             output_file.write("Source File: {0}\r\n\r\n".format(global_plist))
             if self._os_version in ["big_sur", "catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
                                     "mavericks", "mountain_lion", "lion"]:
-            # if self._os_version in ["catalina", "mojave", "high_sierra", "sierra", "el_capitan", "yosemite",
-            #                         "mavericks", "mountain_lion", "lion"]:
                 if os.path.isfile(global_plist):
                     bplist = open(global_plist, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse01(output_file, plist)
+                    parse_os = ParseVers110107(output_file, plist)
                     parse_os.parse()
                 else:
                     logging.warning("File %s does not exist.", global_plist)
@@ -52,7 +50,7 @@ class SystemGlobalPreferences(Plugin):
                     bplist = open(global_plist, "rb")
                     plist = riplib.ccl_bplist.load(bplist)
                     bplist.close()
-                    parse_os = Parse02(output_file, plist)
+                    parse_os = ParseVers106(output_file, plist)
                     parse_os.parse()
             else:
                 logging.warning("Not a known OSX version.")
@@ -61,7 +59,7 @@ class SystemGlobalPreferences(Plugin):
             output_file.write("="*40 + "\r\n\r\n")
         output_file.close()
 
-class Parse01():
+class ParseVers110107():
     """
     Convenience class for parsing macOS data
     """
@@ -89,7 +87,7 @@ class Parse01():
                 for apple_language in apple_languages:
                     self._output_file.write("\tLanguage: {0}\r\n".format(apple_language))
 
-class Parse02():
+class ParseVers106():
     """
     Convenience class for parsing macOS data
     """
