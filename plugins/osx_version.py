@@ -23,7 +23,32 @@ class OSXVersion(Plugin):
         self._description = "Get the OSX version from" \
                             "/System/Library/CoreServices/SystemVersion.plist"
         self._data_file = "SystemVersion.plist"
+        self._compat_file = "SystemVersionCompat.plist"
         self._type = "plist"
+        self._input_dir = "/"
+
+    def parseCompat(self):
+        """
+        Parse SystemVersionCompat.plist and return ProductVersion
+        """
+        plist_file = os.path.join(self._input_dir,
+                                  "System", "Library", "CoreServices", self._compat_file)
+        if not os.path.isfile(plist_file):
+            logging.warning("%s does not exist", self._compat_file)
+            print("[WARNING] {0} does not exist".format(self._compat_file))
+            return "NONE"
+
+        with open(plist_file, "rb") as plist:
+            plist_loaded = plistlib.load(plist)
+        plist.close()
+
+        try:
+            if "ProductVersion" in plist_loaded:
+                product_version = "{0}".format(plist_loaded["ProductVersion"])
+                return product_version
+        except KeyError:
+            logging.warning("[ERROR] ProductVersion key does not exist in %s", self._compat_file)
+            return "NONE"
 
     def parse(self):
         """
@@ -43,7 +68,12 @@ class OSXVersion(Plugin):
         try:
             if "ProductVersion" in plist_loaded:
                 product_version = "{0}".format(plist_loaded["ProductVersion"])
+                major_version = product_version[:2]
+                if major_version != "10":
+                    product_version = self.parseCompat()
+
                 return product_version
         except KeyError:
             logging.warning("[ERROR] ProductVersion key does not exist in %s", self._data_file)
             return "NONE"
+
