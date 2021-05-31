@@ -78,6 +78,9 @@ def __decode_multibyte_int(b, signed=True):
         fmt = ">i"
     elif len(b) == 8:
         fmt = ">q"
+    elif len(b) == 16:
+        #  Added as 16 byte value seen in com.apple.finder.plist threw error
+        fmt = ">16s"
     else:
         raise BplistError("Cannot decode multibyte int of length {0}".format(len(b)))
     
@@ -276,7 +279,7 @@ def load(f):
     # Read offset table
     f.seek(offest_table_offset)
     offset_table = []
-    for i in range(object_count):
+    for _ in range(object_count):
         offset_table.append(__decode_multibyte_int(f.read(offset_int_size), False))
     
     return __decode_object(f, offset_table[top_level_object_index], collection_offset_size, offset_table)

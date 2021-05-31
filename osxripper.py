@@ -49,12 +49,6 @@ def __get_osx_version():
     osx_version = OSXVersion()
     osx_version.set_input_directory(args.input)
     use_version = osx_version.parse()
-    # if "11.1" in use_version:
-    #     use_version = "big_sur"
-    # if "11.0" in use_version:
-    #     use_version = "big_sur"
-    # if "10.16" in use_version:
-    #     use_version = "big_sur"
     if use_version.startswith("11.") or "10.16" in use_version:
         use_version = "big_sur"
     if "10.15" in use_version:
