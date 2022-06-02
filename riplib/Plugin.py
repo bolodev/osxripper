@@ -2,7 +2,7 @@
 # import pprint
 
 __author__ = 'osxripper'
-__version__ = '0.2'
+__version__ = '0.21'
 __license__ = 'GPLv3'
 
 
